@@ -14,7 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.lineageos.jelly.dao.FavoriteDao
 import org.lineageos.jelly.model.Favorite
 
-@Database(entities = [Favorite::class], version = 3)
+@Database(entities = [Favorite::class], version = 3, exportSchema = false)
 abstract class FavoriteDatabase : RoomDatabase() {
     companion object {
         private val MIGRATION_1_2 = object : Migration(1, 2) {

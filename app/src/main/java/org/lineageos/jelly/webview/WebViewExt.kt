@@ -14,6 +14,8 @@ import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import org.lineageos.jelly.R
 import org.lineageos.jelly.js.JsManifest
 import org.lineageos.jelly.js.JsMediaSession
@@ -72,7 +74,8 @@ class WebViewExt @JvmOverloads constructor(
         super.loadUrl(UrlUtils.getFormattedUri(templateUri, url), this.requestHeaders)
     }
 
-    private fun setup(urlBarLayout: UrlBarLayout) {
+
+    fun setup(urlBarLayout: UrlBarLayout) {
         settings.javaScriptEnabled = sharedPreferencesExt.javascriptEnabled
         settings.javaScriptCanOpenWindowsAutomatically = sharedPreferencesExt.javascriptEnabled
         settings.setGeolocationEnabled(sharedPreferencesExt.locationEnabled)
@@ -174,7 +177,36 @@ class WebViewExt @JvmOverloads constructor(
         urlBarLayout.onSearchPositionChangeCallback = { findNext(it) }
         setup(urlBarLayout)
         setWebViewDesktopMode(desktopMode)
+        setupImeAutoBlur()
         initialized = true
+    }
+
+    private var imeVisible = false
+
+    /**
+     * On non-touch devices the DOM keeps the focused field selected after the on-screen
+     * keyboard is dismissed, and the engine asks for the keyboard again on the next focus
+     * callback. Blur the field when the keyboard goes away so that stops; arrow navigation
+     * back into the field brings the keyboard back.
+     */
+    private fun setupImeAutoBlur() {
+        ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+            val visible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            if (imeVisible && !visible && settings.javaScriptEnabled) {
+                evaluateJavascript(
+                    "(function() {" +
+                        "var el = document.activeElement;" +
+                        "if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||" +
+                        "    el.isContentEditable)) {" +
+                        "  el.blur();" +
+                        "}" +
+                        "})();",
+                    null
+                )
+            }
+            imeVisible = visible
+            ViewCompat.onApplyWindowInsets(view, insets)
+        }
     }
 
     val snap: Bitmap

@@ -14,7 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.lineageos.jelly.dao.HistoryDao
 import org.lineageos.jelly.model.History
 
-@Database(entities = [History::class], version = 3)
+@Database(entities = [History::class], version = 3, exportSchema = false)
 abstract class HistoryDatabase : RoomDatabase() {
     companion object {
         private val MIGRATION_1_2 = object : Migration(1, 2) {

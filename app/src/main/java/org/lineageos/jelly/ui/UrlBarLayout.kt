@@ -12,7 +12,6 @@ import android.net.http.SslError
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -67,6 +66,7 @@ class UrlBarLayout @JvmOverloads constructor(
 
             if (value == UrlBarMode.SEARCH) {
                 searchEditText.requestFocus()
+                UiUtils.showKeyboard(requireActivity().window, searchEditText)
             }
         }
 
@@ -135,25 +135,21 @@ class UrlBarLayout @JvmOverloads constructor(
     }
 
     // Listeners
-    private val keyboardListener = ViewTreeObserver.OnGlobalLayoutListener {
-        val isKeyboardOpen = ViewCompat.getRootWindowInsets(this)
-            ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
-
-        if (!isKeyboardOpen && wasKeyboardVisible) {
-            autoCompleteTextView.clearFocus()
-            searchEditText.clearFocus()
-        }
-
-        wasKeyboardVisible = isKeyboardOpen
-    }
-
     init {
         inflate(context, R.layout.url_bar_layout, this)
-        viewTreeObserver.addOnGlobalLayoutListener(keyboardListener)
-    }
+        ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+            val isKeyboardOpen = insets.isVisible(WindowInsetsCompat.Type.ime())
 
-    override fun onViewRemoved(view: View?) {
-        viewTreeObserver.removeOnGlobalLayoutListener(keyboardListener)
+            if (!isKeyboardOpen &&
+                (wasKeyboardVisible || autoCompleteTextView.hasFocus() || searchEditText.hasFocus())
+            ) {
+                autoCompleteTextView.clearFocus()
+                searchEditText.clearFocus()
+            }
+
+            wasKeyboardVisible = isKeyboardOpen
+            ViewCompat.onApplyWindowInsets(view, insets)
+        }
     }
 
     private val suggestionsAdapter = SuggestionsAdapter(context)
@@ -272,9 +268,7 @@ class UrlBarLayout @JvmOverloads constructor(
     }
 
     private fun onFocusChange(view: View, hasFocus: Boolean) {
-        if (hasFocus) {
-            UiUtils.showKeyboard(requireActivity().window, view)
-        } else {
+        if (!hasFocus) {
             UiUtils.hideKeyboard(requireActivity().window, view)
         }
     }

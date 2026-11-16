@@ -9,6 +9,8 @@ import android.app.Activity
 import android.app.ActivityManager.TaskDescription
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
@@ -34,8 +36,11 @@ import android.print.PrintAttributes
 import android.print.PrintManager
 import android.text.TextUtils
 import android.util.Log
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.Gravity
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
@@ -45,6 +50,7 @@ import android.webkit.MimeTypeMap
 import android.webkit.WebChromeClient.CustomViewCallback
 import android.webkit.WebView
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -56,6 +62,7 @@ import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -77,6 +84,7 @@ import org.lineageos.jelly.models.WebShare
 import org.lineageos.jelly.shortcut.BackgroundShortcut
 import org.lineageos.jelly.shortcut.BackgroundShortcutActivity
 import org.lineageos.jelly.shortcut.BackgroundShortcutService
+import org.lineageos.jelly.ui.CursorOverlay
 import org.lineageos.jelly.ui.MenuDialog
 import org.lineageos.jelly.ui.UrlBarLayout
 import org.lineageos.jelly.utils.IntentUtils
@@ -108,6 +116,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private val urlBarLayout by lazy { findViewById<UrlBarLayout>(R.id.urlBarLayout) }
 
     private lateinit var webView: WebViewExt
+    private val cursorOverlay by lazy { findViewById<CursorOverlay>(R.id.cursorOverlay) }
     private var shortcutId: String? = null
     private var shortcutName: String? = null
     private var backgroundShortcutId: String? = null
@@ -225,6 +234,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         super.onCreate(savedInstanceState)
         WebView.setWebContentsDebuggingEnabled(sharedPreferencesExt.webDebuggingEnabled)
         setContentView(R.layout.activity_main)
+        cursorOverlay.iconCallback = {
+            updateCursorIcon(cursorOverlay.cursorX, cursorOverlay.cursorY)
+        }
         setSupportActionBar(toolbar)
         shortcutId = intent.getStringExtra(IntentUtils.EXTRA_SHORTCUT_ID)
         shortcutName = intent.getStringExtra(IntentUtils.EXTRA_SHORTCUT_NAME)
@@ -900,6 +912,421 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 true -> ConstraintLayout.LayoutParams.PARENT_ID
                 false -> ConstraintLayout.LayoutParams.UNSET
             }
+        }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val focus = window.currentFocus
+        if (focus != null && !isInsideUrlBar(focus) && focus != webView) {
+            stopArrowHold()
+            // Focus is in a dialog/popup/selection toolbar or any other native UI: keys stay
+            // native.
+            return super.dispatchKeyEvent(event)
+        }
+        val imeVisible = ViewCompat.getRootWindowInsets(window.decorView)
+            ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+        if (imeVisible) {
+            stopArrowHold()
+            // Editing (address bar or a web field): keys belong to the text field.
+            return super.dispatchKeyEvent(event)
+        }
+        if (focus != null && isInsideUrlBar(focus)) {
+            // Keyboard closed but the field kept focus: release it and drive the cursor.
+            focus.clearFocus()
+        }
+        when (event.keyCode) {
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
+            KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                    okDownTime = event.eventTime
+                    heldOk = true
+                    okTapDone = false
+                    window.decorView.postDelayed(okHoldTap, 400L)
+                } else if (event.action == KeyEvent.ACTION_UP && heldOk) {
+                    heldOk = false
+                    window.decorView.removeCallbacks(okHoldTap)
+                    if (selectionMode && selectionText.isNotEmpty() && selectionMenu == null &&
+                        !cursorOverlay.isPressPending && !okTapDone
+                    ) {
+                        // Short press while a selection is active: open its action menu
+                        // next to the selected text.
+                        showSelectionMenu()
+                    } else if (cursorOverlay.isPressPending) {
+                        cursorOverlay.pressUp()
+                        checkSelectionAfterGesture()
+                    } else if (!okTapDone) {
+                        if (selectionMode && selectionText.isEmpty()) clearSelection()
+                        cursorOverlay.pressDown()
+                        cursorOverlay.pressUp()
+                    }
+                }
+                return true
+            }
+
+            KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    if (heldOk && !okTapDone && !cursorOverlay.isPressPending) {
+                        // Arrows while OK is held (before hold-tap) = drag gesture.
+                        cursorOverlay.pressDown()
+                    }
+                    if (heldArrowKey != event.keyCode) {
+                        // Arrow keys are ours now: make sure nothing can summon the IME
+                        // while the field merely kept a stale focus.
+                        WindowInsetsControllerCompat(window, window.decorView)
+                            .hide(WindowInsetsCompat.Type.ime())
+                        stepCursor(event.keyCode, 15f)
+                        startArrowHold(event.keyCode)
+                    }
+                } else if (event.action == KeyEvent.ACTION_UP && heldArrowKey == event.keyCode) {
+                    stopArrowHold()
+                }
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    private var heldArrowKey = -1
+    private var arrowHoldTick: Runnable? = null
+    private var okDownTime = 0L
+    private var mouseButtonDownTime = 0L
+    private var heldOk = false
+    private var okTapDone = false
+
+    private val okHoldTap = Runnable {
+        if (!heldOk) return@Runnable
+        okTapDone = true
+        if (selectionMode) return@Runnable
+        // Start drag-selection: the cursor keeps moving with the arrow keys and the text
+        // between the hold point and the cursor stays highlighted, like dragging with a mouse.
+        selectionMode = true
+        selAnchorCss = cssCursor(cursorOverlay.cursorX, cursorOverlay.cursorY)
+        updateSelectionDrag()
+    }
+
+    private fun applySelectionResult(value: String?) {
+        val raw = value?.removeSurrounding("\"")
+            ?.replace("\\\"", "\"")
+            ?.replace("\\n", "\n")
+            ?.replace("\\/", "/")
+            ?: return
+        try {
+            val obj = org.json.JSONObject(raw)
+            val text = obj.getString("t")
+            if (text.isEmpty()) return
+            selectionText = text
+            val wl = IntArray(2)
+            webView.getLocationInWindow(wl)
+            val density = resources.displayMetrics.density
+            val rects = obj.getJSONArray("r")
+            val list = ArrayList<FloatArray>(rects.length())
+            for (i in 0 until rects.length()) {
+                val row = rects.getJSONArray(i)
+                list.add(
+                    floatArrayOf(
+                        row.getDouble(0).toFloat() * density + wl[0],
+                        row.getDouble(1).toFloat() * density + wl[1],
+                        row.getDouble(2).toFloat() * density,
+                        row.getDouble(3).toFloat() * density
+                    )
+                )
+            }
+            cursorOverlay.setHighlight(list)
+            if (list.isNotEmpty()) {
+                lastSelRect = list.last()
+            }
+        } catch (ex: Exception) {
+        }
+    }
+
+    private fun stepCursor(keyCode: Int, step: Float) {
+        val dx = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT -> -step
+            KeyEvent.KEYCODE_DPAD_RIGHT -> step
+            else -> 0f
+        }
+        val dy = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> -step
+            KeyEvent.KEYCODE_DPAD_DOWN -> step
+            else -> 0f
+        }
+        if (cursorOverlay.isPressPending) {
+            cursorOverlay.dragBy(dx, dy)
+            return
+        }
+        if (!cursorOverlay.moveBy(dx, dy) && dy != 0f) {
+            webView.scrollBy(0, if (dy > 0f) 120 else -120)
+        } else if (selectionMode) {
+            updateSelectionDrag()
+        }
+    }
+
+    private fun stopArrowHold() {
+        arrowHoldTick?.let { window.decorView.removeCallbacks(it) }
+        arrowHoldTick = null
+        heldArrowKey = -1
+    }
+
+    private fun startArrowHold(keyCode: Int) {
+        stopArrowHold()
+        heldArrowKey = keyCode
+        var ticks = 0
+        val tick = object : Runnable {
+            override fun run() {
+                ticks++
+                val step = (1.5f + ticks * 0.12f).coerceAtMost(11f)
+                stepCursor(heldArrowKey, step)
+                window.decorView.postDelayed(this, 16L)
+            }
+        }
+        arrowHoldTick = tick
+        window.decorView.post(tick)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.isFromSource(android.view.InputDevice.SOURCE_MOUSE)) {
+            if (event.action == MotionEvent.ACTION_BUTTON_RELEASE) {
+                if (event.eventTime - mouseButtonDownTime >= 400L) {
+                    checkSelectionAfterGesture()
+                }
+            } else if (event.action == MotionEvent.ACTION_BUTTON_PRESS) {
+                mouseButtonDownTime = event.downTime
+            } else {
+                cursorOverlay.moveToWindowPoint(event.x, event.y)
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    // The WebView selection menu lives in the WebView's own process window and cannot be
+    // clicked from here, so we offer our own action panel. It is triggered deterministically
+    // after long-press click gestures (which create a selection).
+    private var selectionText = ""
+    private var selectionMode = false
+    private var selAnchorCss = floatArrayOf(0f, 0f)
+    private var selectionMenu: PopupWindow? = null
+    private var lastSelRect: FloatArray? = null
+
+    /**
+     * Reads the selection shortly after a long-press gesture. Blink syncs the DOM selection
+     * asynchronously, so retry a few times until it is visible; only right after a gesture,
+     * never continuously.
+     */
+    private fun checkSelectionAfterGesture() {
+        var attempt = 0
+        val runnable = object : Runnable {
+            override fun run() {
+                attempt++
+                checkSelection { found ->
+                    if (!found && attempt < 3) {
+                        window.decorView.postDelayed(this, 700L)
+                    }
+                }
+            }
+        }
+        window.decorView.postDelayed(runnable, 300L)
+    }
+
+    private fun checkSelection(onResult: ((Boolean) -> Unit)? = null) {
+        if (!sharedPreferencesExt.javascriptEnabled) {
+            onResult?.invoke(false)
+            return
+        }
+        webView.evaluateJavascript("window.getSelection().toString()") { value ->
+            val text = value?.removeSurrounding("\"")?.replace("\\n", "\n") ?: ""
+            if (text.isBlank()) {
+                clearSelection()
+                onResult?.invoke(false)
+            } else {
+                selectionText = text
+                onResult?.invoke(true)
+            }
+        }
+    }
+
+    private fun showSelectionMenu() {
+        dismissSelectionMenu()
+        val density = resources.displayMetrics.density
+        val menu = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = android.graphics.drawable.GradientDrawable().apply {
+                cornerRadius = 14f * density
+                setColor(0xE6282828.toInt())
+            }
+            elevation = 12f * density
+            setPadding(4, 6, 4, 6)
+        }
+        val list = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(4, 6, 4, 6)
+        }
+        val actions = listOf(
+            "Копировать" to {
+                copySelection()
+                dismissSelectionMenu()
+            },
+            "Веб-поиск" to {
+                webView.followUrl(selectionText)
+                clearSelection()
+                dismissSelectionMenu()
+            },
+            "Снять" to {
+                clearSelection()
+                dismissSelectionMenu()
+            }
+        )
+        for ((title, action) in actions) {
+            val row = android.widget.TextView(this).apply {
+                text = title
+                textSize = 16f
+                minWidth = (180 * density).toInt()
+                minHeight = (48 * density).toInt()
+                gravity = Gravity.CENTER_VERTICAL or Gravity.START
+                setPadding((16 * density).toInt(), 0, (16 * density).toInt(), 0)
+                background = android.R.attr.selectableItemBackground.let {
+                    val tv = android.util.TypedValue()
+                    theme.resolveAttribute(it, tv, true)
+                    resources.getDrawable(tv.resourceId, theme)
+                }
+                isFocusable = true
+                setOnClickListener { action() }
+            }
+            list.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+        menu.addView(list)
+        menu.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val menuW = menu.measuredWidth.coerceAtMost(resources.displayMetrics.widthPixels - 16)
+        val menuH = menu.measuredHeight
+        val rect = lastSelRect
+        var x = (rect?.get(0) ?: cursorOverlay.cursorX).toInt().coerceAtMost(
+            resources.displayMetrics.widthPixels - menuW - 8
+        )
+        var y = ((rect?.get(1) ?: cursorOverlay.cursorY) + (rect?.get(3) ?: 0f) + 4f).toInt()
+        if (y + menuH > resources.displayMetrics.heightPixels - 8) {
+            y = ((rect?.get(1) ?: cursorOverlay.cursorY) - menuH - 4f).toInt().coerceAtLeast(8)
+        }
+        val popup = PopupWindow(menu, menuW, menuH, true).apply {
+            isFocusable = true
+            animationStyle = android.R.style.Animation_Dialog
+            setOnDismissListener { clearSelection() }
+        }
+        popup.showAtLocation(webView, Gravity.START or Gravity.TOP, x, y)
+        selectionMenu = popup
+        findFirstFocusable(menu)?.requestFocus()
+    }
+
+    private fun dismissSelectionMenu() {
+        selectionMenu?.dismiss()
+        selectionMenu = null
+    }
+
+    private fun cssCursor(x: Float, y: Float): FloatArray {
+        val wl = IntArray(2)
+        webView.getLocationInWindow(wl)
+        val d = resources.displayMetrics.density
+        return floatArrayOf((x - wl[0]) / d, (y - wl[1]) / d)
+    }
+
+    private fun updateSelectionDrag() {
+        if (!sharedPreferencesExt.javascriptEnabled) return
+        val a = selAnchorCss
+        val c = cssCursor(cursorOverlay.cursorX, cursorOverlay.cursorY)
+        val js = """
+            (function(ax,ay,cx,cy){
+              function caretAt(x,y){
+                var r=null;
+                if(document.caretRangeFromPoint){r=document.caretRangeFromPoint(x,y);}
+                else if(document.caretPositionFromPoint){var p=document.caretPositionFromPoint(x,y);if(p){r=document.createRange();r.setStart(p.offsetNode,p.offset);r.setEnd(p.offsetNode,p.offset);}}
+                return r;
+              }
+              var A=caretAt(ax,ay), B=caretAt(cx,cy);
+              if(!A||!B) return JSON.stringify({t:'',r:[]});
+              var ap=A.startContainer, ao=A.startOffset, bp=B.startContainer, bo=B.startOffset;
+              var range=document.createRange();
+              var before = ap===bp ? ao<=bo : (ap.compareDocumentPosition(bp)&Node.DOCUMENT_POSITION_FOLLOWING)!==0;
+              if(before){range.setStart(ap,ao);range.setEnd(bp,bo);}else{range.setStart(bp,bo);range.setEnd(ap,ao);}
+              var rects=[];var cs=range.getClientRects();
+              for(var i=0;i<cs.length;i++){var q=cs[i];rects.push([q.left,q.top,q.width,q.height]);}
+              return JSON.stringify({t:range.toString(),r:rects});
+            })(${a[0]},${a[1]},${c[0]},${c[1]})
+        """.trimIndent()
+        webView.evaluateJavascript(js) { value -> applySelectionResult(value) }
+    }
+
+    private fun copySelection() {
+        if (selectionText.isEmpty()) return
+        val clipboard = getSystemService(ClipboardManager::class.java)
+        clipboard.setPrimaryClip(ClipData.newPlainText("Jelly", selectionText))
+    }
+
+    private fun clearSelection() {
+        selectionMode = false
+        selectionText = ""
+        lastSelRect = null
+        cursorOverlay.setHighlight(emptyList())
+        dismissSelectionMenu()
+    }
+
+    private fun findFirstFocusable(view: View?): View? {
+        if (view == null) return null
+        if (view.isFocusable && view.isVisible) return view
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                findFirstFocusable(view.getChildAt(i))?.let { return it }
+            }
+        }
+        return null
+    }
+
+    private fun isInsideUrlBar(view: View): Boolean {
+        var v: View? = view
+        while (v != null) {
+            if (v === urlBarLayout) return true
+            v = v.parent as? View
+        }
+        return false
+    }
+
+    private fun updateCursorIcon(x: Float, y: Float) {
+        val wl = IntArray(2)
+        webView.getLocationInWindow(wl)
+        val wx = x - wl[0]
+        val wy = y - wl[1]
+        if (wx < 0f || wy < 0f || wx > webView.width || wy > webView.height) {
+            cursorOverlay.setIconKind("arrow")
+            return
+        }
+        val density = resources.displayMetrics.density
+        val cssX = (wx / density).toInt()
+        val cssY = (wy / density).toInt()
+        val js = """
+            (function() {
+              var el = document.elementFromPoint($cssX, $cssY);
+              if (!el) return 'arrow';
+              var field = el.closest('input,textarea,[contenteditable="true"]');
+              if (field) return 'text';
+              var link = el.closest('a,button,[role="button"]');
+              if (link) return 'hand';
+              return 'arrow';
+            })()
+        """.trimIndent()
+        webView.evaluateJavascript(js) { value ->
+            val kind = when {
+                value?.contains("hand") == true -> "hand"
+                value?.contains("text") == true -> "text"
+                else -> "arrow"
+            }
+            cursorOverlay.setIconKind(kind)
         }
     }
 
