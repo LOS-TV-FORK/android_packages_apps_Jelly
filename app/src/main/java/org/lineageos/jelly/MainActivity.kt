@@ -989,6 +989,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     private var heldArrowKey = -1
     private var arrowHoldTick: Runnable? = null
+    private var scrollTicks = 0
     private var okDownTime = 0L
     private var mouseButtonDownTime = 0L
     private var heldOk = false
@@ -1056,9 +1057,13 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             return
         }
         if (!cursorOverlay.moveBy(dx, dy) && dy != 0f) {
-            webView.scrollBy(0, if (dy > 0f) 120 else -120)
+            scrollTicks++
+            val amount = (4f + scrollTicks * 0.4f).coerceAtMost(14f)
+            webView.scrollBy(0, if (dy > 0f) amount.toInt() else -amount.toInt())
         } else if (selectionMode) {
             updateSelectionDrag()
+        } else {
+            scrollTicks = 0
         }
     }
 
@@ -1066,6 +1071,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         arrowHoldTick?.let { window.decorView.removeCallbacks(it) }
         arrowHoldTick = null
         heldArrowKey = -1
+        scrollTicks = 0
     }
 
     private fun startArrowHold(keyCode: Int) {
