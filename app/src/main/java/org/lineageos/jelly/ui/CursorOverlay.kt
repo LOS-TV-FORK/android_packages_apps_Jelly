@@ -71,20 +71,26 @@ class CursorOverlay @JvmOverloads constructor(
         setArrowDrawable(d)
     }
 
+    var hoverEnabled = true
+
     /**
      * Dispatches a synthetic hover event at the cursor position (real hover feedback in the
-     * page) and asks the activity to resolve the cursor icon.
+     * page) and asks the activity to resolve the cursor icon. Disabled once a real mouse is
+     * seen: the mouse generates its own hover, and injecting ours would cancel Blink's
+     * long-press selection gesture.
      */
     fun onCursorSettled() {
-        val loc = windowLocation()
-        val now = SystemClock.uptimeMillis()
-        val event = MotionEvent.obtain(
-            now, now, MotionEvent.ACTION_HOVER_MOVE,
-            cursorX + loc[0], cursorY + loc[1], 0
-        )
-        event.source = android.view.InputDevice.SOURCE_MOUSE
-        rootView.dispatchGenericMotionEvent(event)
-        event.recycle()
+        if (hoverEnabled) {
+            val loc = windowLocation()
+            val now = SystemClock.uptimeMillis()
+            val event = MotionEvent.obtain(
+                now, now, MotionEvent.ACTION_HOVER_MOVE,
+                cursorX + loc[0], cursorY + loc[1], 0
+            )
+            event.source = android.view.InputDevice.SOURCE_MOUSE
+            rootView.dispatchGenericMotionEvent(event)
+            event.recycle()
+        }
         iconCallback?.invoke()
     }
 

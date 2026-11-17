@@ -990,8 +990,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private var heldArrowKey = -1
     private var arrowHoldTick: Runnable? = null
     private var scrollTicks = 0
+
+    private val mouseGone = Runnable { cursorOverlay.hoverEnabled = true }
     private var okDownTime = 0L
-    private var mouseButtonDownTime = 0L
     private var heldOk = false
     private var okTapDone = false
 
@@ -1092,13 +1093,14 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.isFromSource(android.view.InputDevice.SOURCE_MOUSE)) {
-            if (event.action == MotionEvent.ACTION_BUTTON_RELEASE) {
-                if (event.eventTime - mouseButtonDownTime >= 400L) {
-                    checkSelectionAfterGesture()
-                }
-            } else if (event.action == MotionEvent.ACTION_BUTTON_PRESS) {
-                mouseButtonDownTime = event.downTime
-            } else {
+            cursorOverlay.hoverEnabled = false
+            window.decorView.removeCallbacks(mouseGone)
+            window.decorView.postDelayed(mouseGone, 3000L)
+            if (event.action == MotionEvent.ACTION_UP) {
+                checkSelectionAfterGesture()
+            } else if (event.action != MotionEvent.ACTION_DOWN &&
+                event.action != MotionEvent.ACTION_BUTTON_PRESS
+            ) {
                 cursorOverlay.moveToWindowPoint(event.x, event.y)
             }
         }
@@ -1146,6 +1148,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 onResult?.invoke(false)
             } else {
                 selectionText = text
+                selectionMode = true
+                updateHighlightFromSelection()
+                showSelectionMenu()
                 onResult?.invoke(true)
             }
         }
@@ -1243,6 +1248,20 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         return floatArrayOf((x - wl[0]) / d, (y - wl[1]) / d)
     }
 
+    private fun updateHighlightFromSelection() {
+        if (!sharedPreferencesExt.javascriptEnabled) return
+        val js = """
+            (function(){
+              var s=window.getSelection();
+              if(!s.rangeCount) return JSON.stringify({t:'',r:[]});
+              var rects=Array.from(s.getRangeAt(0).getClientRects())
+                .map(function(b){return [b.x,b.y,b.width,b.height];});
+              return JSON.stringify({t:s.toString(),r:rects});
+            })()
+        """.trimIndent()
+        webView.evaluateJavascript(js) { value -> applySelectionResult(value) }
+    }
+
     private fun updateSelectionDrag() {
         if (!sharedPreferencesExt.javascriptEnabled) return
         val a = selAnchorCss
@@ -1281,6 +1300,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         lastSelRect = null
         cursorOverlay.setHighlight(emptyList())
         dismissSelectionMenu()
+        if (sharedPreferencesExt.javascriptEnabled) {
+            webView.evaluateJavascript("window.getSelection().removeAllRanges()", null)
+        }
     }
 
     private fun findFirstFocusable(view: View?): View? {
