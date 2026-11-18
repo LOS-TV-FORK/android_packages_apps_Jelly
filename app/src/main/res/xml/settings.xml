@@ -70,6 +70,13 @@
         app:title="@string/pref_privacy_security">
 
         <SwitchPreference
+            app:defaultValue="1"
+            app:iconSpaceReserved="false"
+            app:key="key_ad_block"
+            app:summary="@string/pref_ad_block_summary"
+            app:title="@string/pref_ad_block_title" />
+
+        <SwitchPreference
             app:defaultValue="0"
             app:iconSpaceReserved="false"
             app:key="key_looklock"

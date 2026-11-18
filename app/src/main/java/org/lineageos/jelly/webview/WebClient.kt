@@ -23,6 +23,7 @@ import android.view.LayoutInflater
 import android.webkit.HttpAuthHandler
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
@@ -36,15 +37,20 @@ import org.lineageos.jelly.js.JsMediaSession
 import org.lineageos.jelly.js.JsShare
 import org.lineageos.jelly.js.JsSyncUrl
 import org.lineageos.jelly.ui.UrlBarLayout
+import org.lineageos.jelly.utils.AdBlock
 import org.lineageos.jelly.utils.AssetLoader
 import org.lineageos.jelly.utils.IntentUtils
 import org.lineageos.jelly.utils.UrlUtils
+import java.io.ByteArrayInputStream
 import java.net.URISyntaxException
 
 internal class WebClient(
     private val context: Context,
     private val urlBarLayout: UrlBarLayout,
 ) : WebViewClient() {
+    @Volatile
+    private var pageUrl: String? = null
+
     private val scripts by lazy {
         val mediaSessionAPI = AssetLoader.loadAsset(
             context.resources,
@@ -59,10 +65,29 @@ internal class WebClient(
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
+        pageUrl = url
         urlBarLayout.onPageLoadStarted(url)
         if (view.settings.javaScriptEnabled) {
             view.evaluateJavascript(scripts, null)
         }
+        if (AdBlock.enabled(context)) {
+            AdBlock.cosmeticScript(url)?.let { view.evaluateJavascript(it, null) }
+        }
+    }
+
+    override fun shouldInterceptRequest(
+        view: WebView,
+        request: WebResourceRequest
+    ): WebResourceResponse? {
+        if (!request.isForMainFrame && AdBlock.enabled(context)) {
+            val url = request.url?.toString()
+            if (url != null && AdBlock.shouldBlock(url, pageUrl)) {
+                return WebResourceResponse(
+                    "text/plain", "utf-8", ByteArrayInputStream(ByteArray(0))
+                )
+            }
+        }
+        return null
     }
 
     override fun onPageFinished(view: WebView, url: String) {

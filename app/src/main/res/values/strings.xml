@@ -113,6 +113,10 @@
     <string name="pref_start_page_dialog_reset">Reset</string>
     <!-- Settings: privacy and security category -->
     <string name="pref_privacy_security">Privacy &amp; security</string>
+    <!-- Settings: ad blocking title -->
+    <string name="pref_ad_block_title">Ad blocking</string>
+    <!-- Settings: ad blocking summary -->
+    <string name="pref_ad_block_summary">Block ads and trackers with EasyList and EasyPrivacy</string>
     <!-- Settings: lookLock title -->
     <string name="pref_looklock_title">LookLock</string>
     <!-- Settings: lookLock summary -->

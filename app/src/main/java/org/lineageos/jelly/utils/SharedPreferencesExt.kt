@@ -91,6 +91,9 @@ class SharedPreferencesExt(context: Context) {
             FULLSCREEN_SHORTCUTS_ENABLED_KEY, FULLSCREEN_SHORTCUTS_ENABLED_DEFAULT
         )
 
+    val adBlockEnabled: Boolean
+        get() = sharedPreferences.getBoolean(AD_BLOCK_ENABLED_KEY, AD_BLOCK_ENABLED_DEFAULT)
+
     companion object {
         private const val DESKTOP_SHORTCUTS_KEY = "desktop_shortcuts"
 
@@ -136,5 +139,8 @@ class SharedPreferencesExt(context: Context) {
 
         private const val FULLSCREEN_SHORTCUTS_ENABLED_KEY = "key_fullscreen_shortcuts"
         private const val FULLSCREEN_SHORTCUTS_ENABLED_DEFAULT = false
+
+        private const val AD_BLOCK_ENABLED_KEY = "key_ad_block"
+        private const val AD_BLOCK_ENABLED_DEFAULT = true
     }
 }

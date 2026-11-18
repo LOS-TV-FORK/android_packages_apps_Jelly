@@ -87,6 +87,7 @@ import org.lineageos.jelly.shortcut.BackgroundShortcutService
 import org.lineageos.jelly.ui.CursorOverlay
 import org.lineageos.jelly.ui.MenuDialog
 import org.lineageos.jelly.ui.UrlBarLayout
+import org.lineageos.jelly.utils.AdBlock
 import org.lineageos.jelly.utils.IntentUtils
 import org.lineageos.jelly.utils.PermissionsUtils
 import org.lineageos.jelly.utils.SharedPreferencesExt
@@ -233,6 +234,10 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WebView.setWebContentsDebuggingEnabled(sharedPreferencesExt.webDebuggingEnabled)
+        AdBlock.init(this)
+        if (AdBlock.enabled(this)) {
+            AdBlock.ensureFresh(this)
+        }
         setContentView(R.layout.activity_main)
         cursorOverlay.iconCallback = {
             updateCursorIcon(cursorOverlay.cursorX, cursorOverlay.cursorY)
