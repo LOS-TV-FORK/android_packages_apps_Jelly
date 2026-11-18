@@ -177,6 +177,7 @@ class CursorOverlay @JvmOverloads constructor(
     private var targetX = 0f
     private var targetY = 0f
     private var gliding = false
+    private var lastMoveNotify = 0L
     private val glideFrame: Runnable = Runnable {
         val dx = targetX - cursorX
         val dy = targetY - cursorY
@@ -192,6 +193,13 @@ class CursorOverlay @JvmOverloads constructor(
             gliding = true
             postOnAnimation(glideFrame)
             invalidateArrow()
+            // Live hover/icon feedback while moving, throttled so the JS hit test
+            // cannot run on every animation frame.
+            val now = SystemClock.uptimeMillis()
+            if (now - lastMoveNotify > 110L) {
+                lastMoveNotify = now
+                onCursorSettled()
+            }
         }
     }
 

@@ -946,6 +946,15 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_MENU) {
+            // Classic Android behavior: the MENU key opens the overflow menu,
+            // exactly like tapping the three-dot button. Intercepted before the view
+            // tree because Chromium's WebView swallows MENU itself.
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                urlBarLayout.onMoreButtonClickCallback?.invoke()
+            }
+            return true
+        }
         if (!cursorUiEnabled()) return super.dispatchKeyEvent(event)
         val focus = window.currentFocus
         val inWebContent = focus != null && (
@@ -972,6 +981,11 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         when (event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
             KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                if (wheelMode) {
+                    // OK leaves the wheel mode instead of clicking.
+                    if (event.action == KeyEvent.ACTION_DOWN) exitWheelMode()
+                    return true
+                }
                 if (event.action == KeyEvent.ACTION_DOWN && crossOpen) {
                     // Only a fresh (non-repeating) press arms the close-on-release; the
                     // auto-repeat of the long press that opened the cross must not, or the
