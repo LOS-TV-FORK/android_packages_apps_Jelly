@@ -116,4 +116,18 @@
     <string name="location_dialog_cancel">Nu weigeren</string>
     <string name="protected_media_dialog_grant">Sta Toe</string>
     <string name="protected_media_dialog_deny">Weiger</string>
+    <string name="pref_cursor_mode">Virtuele cursor</string>
+    <string name="cross_reload">Herladen</string>
+    <string name="cross_select">Tekst selecteren</string>
+    <string name="cross_wheel">Muiswiel</string>
+    <string name="pref_ad_block_title">Advertentieblokkering</string>
+    <string name="pref_ad_block_summary">blokkeer advertenties en trackers met EasyList en EasyPrivacy</string>
+    <string name="selection_copy">Kopiëren</string>
+    <string name="selection_web_search">Zoeken op internet</string>
+    <string name="selection_clear">Wissen</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatisch</item>
+        <item>Aan</item>
+        <item>Uit</item>
+    </string-array>
 </resources>

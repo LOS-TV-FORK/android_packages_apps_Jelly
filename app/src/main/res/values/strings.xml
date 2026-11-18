@@ -123,6 +123,12 @@
     <string name="pref_ad_block_title">Ad blocking</string>
     <!-- Settings: ad blocking summary -->
     <string name="pref_ad_block_summary">Block ads and trackers with EasyList and EasyPrivacy</string>
+    <!-- Selection menu: copy selected text -->
+    <string name="selection_copy">Copy</string>
+    <!-- Selection menu: search selected text on the web -->
+    <string name="selection_web_search">Web search</string>
+    <!-- Selection menu: dismiss the selection -->
+    <string name="selection_clear">Clear</string>
     <!-- Settings: lookLock title -->
     <string name="pref_looklock_title">LookLock</string>
     <!-- Settings: lookLock summary -->

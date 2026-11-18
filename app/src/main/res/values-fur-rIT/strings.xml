@@ -126,4 +126,18 @@
     <string name="protected_media_dialog_grant">Permet</string>
     <string name="protected_media_dialog_deny">Dinee</string>
     <string name="media_session_destroy_action">Interomp</string>
+    <string name="pref_cursor_mode">Cursors virtuâl</string>
+    <string name="cross_reload">Ricarie</string>
+    <string name="cross_select">Selezione il test</string>
+    <string name="cross_wheel">Rodele</string>
+    <string name="pref_ad_block_title">Bloc des reclamutis</string>
+    <string name="pref_ad_block_summary">bloche reclamutis e trachadôrs cun EasyList e EasyPrivacy</string>
+    <string name="selection_copy">Copie</string>
+    <string name="selection_web_search">Ricirce web</string>
+    <string name="selection_clear">Nete</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Atîf</item>
+        <item>Disativât</item>
+    </string-array>
 </resources>

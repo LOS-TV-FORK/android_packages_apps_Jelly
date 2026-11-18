@@ -80,4 +80,18 @@
     <string name="ssl_cert_dialog_issued_on">Izdano</string>
     <string name="ssl_cert_dialog_expires_on">Istječe</string>
     <string name="ssl_cert_dialog_dismiss">Odbaci</string>
+    <string name="pref_cursor_mode">Virtualni kursor</string>
+    <string name="cross_reload">Učitaj ponovno</string>
+    <string name="cross_select">Odaberi tekst</string>
+    <string name="cross_wheel">Kotačić</string>
+    <string name="pref_ad_block_title">Blokiranje oglasa</string>
+    <string name="pref_ad_block_summary">blokirajte oglase i praćenje pomoću EasyList i EasyPrivacy</string>
+    <string name="selection_copy">Kopiraj</string>
+    <string name="selection_web_search">Web pretraga</string>
+    <string name="selection_clear">Očisti</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatski</item>
+        <item>Uključeno</item>
+        <item>Isključeno</item>
+    </string-array>
 </resources>

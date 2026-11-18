@@ -125,4 +125,18 @@
     <string name="protected_media_dialog_grant">허용</string>
     <string name="protected_media_dialog_deny">거부</string>
     <string name="media_session_destroy_action">중지</string>
+    <string name="pref_cursor_mode">가상 커서</string>
+    <string name="cross_reload">새로 고침</string>
+    <string name="cross_select">텍스트 선택</string>
+    <string name="cross_wheel">휠</string>
+    <string name="pref_ad_block_title">광고 차단</string>
+    <string name="pref_ad_block_summary">EasyList 및 EasyPrivacy로 광고 및 트래커 차단</string>
+    <string name="selection_copy">복사</string>
+    <string name="selection_web_search">웹 검색</string>
+    <string name="selection_clear">지우기</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>자동</item>
+        <item>켬</item>
+        <item>끔</item>
+    </string-array>
 </resources>

@@ -135,4 +135,18 @@
     <string name="protected_media_dialog_grant">Zezwól</string>
     <string name="protected_media_dialog_deny">Odmów</string>
     <string name="media_session_destroy_action">Zatrzymaj</string>
+    <string name="pref_cursor_mode">Kursor wirtualny</string>
+    <string name="cross_reload">Odśwież</string>
+    <string name="cross_select">Zaznacz tekst</string>
+    <string name="cross_wheel">Kółko</string>
+    <string name="pref_ad_block_title">Blokowanie reklam</string>
+    <string name="pref_ad_block_summary">blokuj reklamy i trackery za pomocą EasyList i EasyPrivacy</string>
+    <string name="selection_copy">Kopiuj</string>
+    <string name="selection_web_search">Wyszukiwanie w sieci</string>
+    <string name="selection_clear">Wyczyść</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Włącz</item>
+        <item>Wyłącz</item>
+    </string-array>
 </resources>

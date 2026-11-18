@@ -126,4 +126,18 @@
     <string name="protected_media_dialog_grant">Erlauben</string>
     <string name="protected_media_dialog_deny">Verweigern</string>
     <string name="media_session_destroy_action">Stoppen</string>
+    <string name="pref_cursor_mode">Virtueller Cursor</string>
+    <string name="cross_reload">Neu laden</string>
+    <string name="cross_select">Text auswählen</string>
+    <string name="cross_wheel">Mausrad</string>
+    <string name="pref_ad_block_title">Werbblocker</string>
+    <string name="pref_ad_block_summary">blockiert Werbung und Tracker mit EasyList und EasyPrivacy</string>
+    <string name="selection_copy">Kopieren</string>
+    <string name="selection_web_search">Websuche</string>
+    <string name="selection_clear">Löschen</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Ein</item>
+        <item>Aus</item>
+    </string-array>
 </resources>

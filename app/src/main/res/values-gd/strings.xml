@@ -85,4 +85,18 @@
     <string name="ssl_cert_dialog_issued_on">Air fhoillseachadh</string>
     <string name="ssl_cert_dialog_expires_on">Falbhaidh an ùine air</string>
     <string name="ssl_cert_dialog_dismiss">Leig seachad</string>
+    <string name="pref_cursor_mode">Comharra brìgheil</string>
+    <string name="cross_reload">Ath-luchdaich</string>
+    <string name="cross_select">Tagh teacsa</string>
+    <string name="cross_wheel">Cuibhleag</string>
+    <string name="pref_ad_block_title">Bacadh shanasan</string>
+    <string name="pref_ad_block_summary">bac air sanasan is luchd-luirg le EasyList agus EasyPrivacy</string>
+    <string name="selection_copy">Cuir air leth</string>
+    <string name="selection_web_search">Lorg-lìn</string>
+    <string name="selection_clear">Falamhaich</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Fèin-obrachail</item>
+        <item>Air</item>
+        <item>Dheth</item>
+    </string-array>
 </resources>

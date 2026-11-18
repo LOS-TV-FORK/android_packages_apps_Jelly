@@ -52,4 +52,18 @@
     <string name="ssl_cert_dialog_issued_on">ಕೊಟ್ಟ ದಿನಾಂಕ</string>
     <string name="ssl_cert_dialog_expires_on">ರಂದು ಗತಿಸುವುದು</string>
     <string name="ssl_cert_dialog_dismiss">ವಜಾಮಾಡು</string>
+    <string name="pref_cursor_mode">ವರ್ಚುವಲ್ ಕರ್ಸರ್</string>
+    <string name="cross_reload">ಪುನಃ ಲೋಡ್ ಮಾಡಿ</string>
+    <string name="cross_select">ಪಠ್ಯ ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="cross_wheel">ಚಕ್ರ</string>
+    <string name="pref_ad_block_title">ಜಾಹಿರಾತು ತಡೆಗಟ್ಟುವಿಕೆ</string>
+    <string name="pref_ad_block_summary">EasyList ಮತ್ತು EasyPrivacy ಬಳಸಿ ಜಾಹಿರಾತುಗಳು ಮತ್ತು ಟ್ರ್ಯಾಕರ್‌ಗಳನ್ನು ತಡೆಯಿರಿ</string>
+    <string name="selection_copy">ನಕಲಿಸಿ</string>
+    <string name="selection_web_search">ವೆಬ್ ಹುಡುಕಾಟ</string>
+    <string name="selection_clear">ತೆರವುಗೊಳಿಸಿ</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>ಸ್ವಯಂ</item>
+        <item>ಆನ್</item>
+        <item>ಆಫ್</item>
+    </string-array>
 </resources>

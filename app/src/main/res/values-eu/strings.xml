@@ -84,4 +84,18 @@
     <string name="ssl_cert_dialog_issued_on">Jaulkitze-data:</string>
     <string name="ssl_cert_dialog_expires_on">Iraungitze-data:</string>
     <string name="ssl_cert_dialog_dismiss">Baztertu</string>
+    <string name="pref_cursor_mode">Kurtsore birtuala</string>
+    <string name="cross_reload">Kargatu berriro</string>
+    <string name="cross_select">Hautatu testua</string>
+    <string name="cross_wheel">Gurpila</string>
+    <string name="pref_ad_block_title">Iragarkien blokeoa</string>
+    <string name="pref_ad_block_summary">blokeatu iragarkiak eta jarraitzaileak EasyList eta EasyPrivacy erabiliz</string>
+    <string name="selection_copy">Kopiatu</string>
+    <string name="selection_web_search">Web bilaketa</string>
+    <string name="selection_clear">Garbitu</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatikoa</item>
+        <item>Aktibo</item>
+        <item>Desaktibatuta</item>
+    </string-array>
 </resources>

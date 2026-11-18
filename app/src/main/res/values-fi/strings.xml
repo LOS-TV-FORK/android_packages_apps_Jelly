@@ -99,4 +99,18 @@
     <string name="location_dialog_allow">Salli</string>
     <string name="location_dialog_block">Estä</string>
     <string name="location_dialog_cancel">Estä tällä toistaiseksi</string>
+    <string name="pref_cursor_mode">Virtuaalinen osoitin</string>
+    <string name="cross_reload">Lataa uudelleen</string>
+    <string name="cross_select">Valitse teksti</string>
+    <string name="cross_wheel">Rulla</string>
+    <string name="pref_ad_block_title">Mainostenesto</string>
+    <string name="pref_ad_block_summary">estä mainokset ja seuranta EasyList- ja EasyPrivacy-listoilla</string>
+    <string name="selection_copy">Kopioi</string>
+    <string name="selection_web_search">Verkkohaku</string>
+    <string name="selection_clear">Tyhjennä</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Käytössä</item>
+        <item>Pois käytöstä</item>
+    </string-array>
 </resources>

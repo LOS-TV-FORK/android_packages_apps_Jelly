@@ -119,4 +119,18 @@
     <string name="protected_media_dialog_grant">Lejo</string>
     <string name="protected_media_dialog_deny">Refuzo</string>
     <string name="media_session_destroy_action">Ndalo</string>
+    <string name="pref_cursor_mode">Kursor virtual</string>
+    <string name="cross_reload">Rifresko</string>
+    <string name="cross_select">Përzgjidh tekstin</string>
+    <string name="cross_wheel">Rrota e miut</string>
+    <string name="pref_ad_block_title">Bllokimi i reklamave</string>
+    <string name="pref_ad_block_summary">bllokoni reklamat dhe gjurmuesit me EasyList dhe EasyPrivacy</string>
+    <string name="selection_copy">Kopjo</string>
+    <string name="selection_web_search">Kërkim në web</string>
+    <string name="selection_clear">Pastro</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatike</item>
+        <item>Aktiv</item>
+        <item>Çaktiv</item>
+    </string-array>
 </resources>

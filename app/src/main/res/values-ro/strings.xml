@@ -133,4 +133,18 @@
     <string name="protected_media_dialog_grant">Permite</string>
     <string name="protected_media_dialog_deny">Refuză</string>
     <string name="media_session_destroy_action">Stop</string>
+    <string name="pref_cursor_mode">Cursor virtual</string>
+    <string name="cross_reload">Reîncarcă</string>
+    <string name="cross_select">Selectează textul</string>
+    <string name="cross_wheel">Rotița</string>
+    <string name="pref_ad_block_title">Blocare reclame</string>
+    <string name="pref_ad_block_summary">blochează reclamele și trackerele cu EasyList și EasyPrivacy</string>
+    <string name="selection_copy">Copiază</string>
+    <string name="selection_web_search">Căutare web</string>
+    <string name="selection_clear">Golește</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automat</item>
+        <item>Pornit</item>
+        <item>Oprit</item>
+    </string-array>
 </resources>

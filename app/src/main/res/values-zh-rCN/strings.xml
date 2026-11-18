@@ -131,4 +131,18 @@
     <string name="protected_media_dialog_grant">授权</string>
     <string name="protected_media_dialog_deny">拒绝</string>
     <string name="media_session_destroy_action">停止</string>
+    <string name="pref_cursor_mode">虚拟光标</string>
+    <string name="cross_reload">重新加载</string>
+    <string name="cross_select">选择文本</string>
+    <string name="cross_wheel">滚轮</string>
+    <string name="pref_ad_block_title">广告拦截</string>
+    <string name="pref_ad_block_summary">使用 EasyList 和 EasyPrivacy 拦截广告与跟踪器</string>
+    <string name="selection_copy">复制</string>
+    <string name="selection_web_search">网页搜索</string>
+    <string name="selection_clear">清除</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>自动</item>
+        <item>开</item>
+        <item>关</item>
+    </string-array>
 </resources>

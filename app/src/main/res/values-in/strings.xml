@@ -125,4 +125,18 @@
     <string name="protected_media_dialog_grant">Izinkan</string>
     <string name="protected_media_dialog_deny">Tolak</string>
     <string name="media_session_destroy_action">Hentikan</string>
+    <string name="pref_cursor_mode">Kursor virtual</string>
+    <string name="cross_reload">Muat ulang</string>
+    <string name="cross_select">Pilih teks</string>
+    <string name="cross_wheel">Roda</string>
+    <string name="pref_ad_block_title">Pemblokiran iklan</string>
+    <string name="pref_ad_block_summary">blokir iklan dan pelacak dengan EasyList dan EasyPrivacy</string>
+    <string name="selection_copy">Salin</string>
+    <string name="selection_web_search">Pencarian web</string>
+    <string name="selection_clear">Hapus</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Otomatis</item>
+        <item>Aktif</item>
+        <item>Nonaktif</item>
+    </string-array>
 </resources>

@@ -126,4 +126,18 @@
     <string name="protected_media_dialog_grant">Разрешаване</string>
     <string name="protected_media_dialog_deny">Отказване</string>
     <string name="media_session_destroy_action">Прекрати</string>
+    <string name="pref_cursor_mode">Виртуален курсор</string>
+    <string name="cross_reload">Презареждане</string>
+    <string name="cross_select">Избери текст</string>
+    <string name="cross_wheel">Колело</string>
+    <string name="pref_ad_block_title">Блокиране на реклами</string>
+    <string name="pref_ad_block_summary">блокирайте рекламите и тракерите с EasyList и EasyPrivacy</string>
+    <string name="selection_copy">Копиране</string>
+    <string name="selection_web_search">Уеб търсене</string>
+    <string name="selection_clear">Изчисти</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Авто</item>
+        <item>Включено</item>
+        <item>Изключено</item>
+    </string-array>
 </resources>

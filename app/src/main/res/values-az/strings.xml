@@ -132,4 +132,18 @@
     <string name="protected_media_dialog_grant">İcazə ver</string>
     <string name="protected_media_dialog_deny">Rədd et</string>
     <string name="media_session_destroy_action">Dayandır</string>
+    <string name="pref_cursor_mode">Virtual kursor</string>
+    <string name="cross_reload">Yenilə</string>
+    <string name="cross_select">Mətni seç</string>
+    <string name="cross_wheel">Təker</string>
+    <string name="pref_ad_block_title">Reklam blokadası</string>
+    <string name="pref_ad_block_summary">Reklamları və izləyiciləri EasyList və EasyPrivacy ilə bloklayın</string>
+    <string name="selection_copy">Kopyala</string>
+    <string name="selection_web_search">Veb axtarışı</string>
+    <string name="selection_clear">Təmizlə</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Avtomatik</item>
+        <item>Aktiv</item>
+        <item>Deaktiv</item>
+    </string-array>
 </resources>

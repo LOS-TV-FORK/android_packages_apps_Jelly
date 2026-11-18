@@ -133,4 +133,18 @@
     <string name="protected_media_dialog_grant">לאשר</string>
     <string name="protected_media_dialog_deny">חסימה</string>
     <string name="media_session_destroy_action">עצירה</string>
+    <string name="pref_cursor_mode">סמן מדומה</string>
+    <string name="cross_reload">טען מחדש</string>
+    <string name="cross_select">בחר טקסט</string>
+    <string name="cross_wheel">גלגלת</string>
+    <string name="pref_ad_block_title">חסימת פרסומות</string>
+    <string name="pref_ad_block_summary">חסום פרסומות וכלי מעקב בעזרת EasyList ו־EasyPrivacy</string>
+    <string name="selection_copy">העתקה</string>
+    <string name="selection_web_search">חיפוש רשת</string>
+    <string name="selection_clear">ניקוי</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>אוטומטי</item>
+        <item>פעיל</item>
+        <item>לא פעיל</item>
+    </string-array>
 </resources>

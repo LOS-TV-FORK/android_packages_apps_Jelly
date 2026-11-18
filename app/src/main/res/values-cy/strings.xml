@@ -104,4 +104,18 @@
     <string name="location_dialog_cancel">Gwrthod am y tro</string>
     <string name="protected_media_dialog_message">Caniatáu cyfryngau wedi\'i gwarchod?</string>
     <string name="protected_media_dialog_deny">Gwrthod</string>
+    <string name="pref_cursor_mode">Cyrsorydd rhithwir</string>
+    <string name="cross_reload">Ail-lwytho</string>
+    <string name="cross_select">Dewis testun</string>
+    <string name="cross_wheel">Olwyn llygoden</string>
+    <string name="pref_ad_block_title">Rhwystro hysbysebion</string>
+    <string name="pref_ad_block_summary">rhwystrwch hysbysebion a drakiadau gyda EasyList ac EasyPrivacy</string>
+    <string name="selection_copy">Copïo</string>
+    <string name="selection_web_search">Chwilio\'r gwe</string>
+    <string name="selection_clear">Clirio</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Awto</item>
+        <item>Ymlaen</item>
+        <item>I ffwrdd</item>
+    </string-array>
 </resources>

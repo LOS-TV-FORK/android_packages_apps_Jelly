@@ -130,4 +130,18 @@
     <string name="protected_media_dialog_grant">Gje tilgang</string>
     <string name="protected_media_dialog_deny">Nekt</string>
     <string name="media_session_destroy_action">Stopp</string>
+    <string name="pref_cursor_mode">Virtuell markør</string>
+    <string name="cross_reload">Last inn igjen</string>
+    <string name="cross_select">Vel tekst</string>
+    <string name="cross_wheel">Musehjul</string>
+    <string name="pref_ad_block_title">Annonseblokkering</string>
+    <string name="pref_ad_block_summary">blokker annonsar og sporarar med EasyList og EasyPrivacy</string>
+    <string name="selection_copy">Kopier</string>
+    <string name="selection_web_search">Nettsøk</string>
+    <string name="selection_clear">Tøm</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>På</item>
+        <item>Av</item>
+    </string-array>
 </resources>

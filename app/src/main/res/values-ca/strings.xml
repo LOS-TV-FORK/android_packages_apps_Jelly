@@ -133,4 +133,18 @@
     <string name="protected_media_dialog_grant">Permet</string>
     <string name="protected_media_dialog_deny">Denega</string>
     <string name="media_session_destroy_action">Atura</string>
+    <string name="pref_cursor_mode">Cursor virtual</string>
+    <string name="cross_reload">Recarregar</string>
+    <string name="cross_select">Selecciona el text</string>
+    <string name="cross_wheel">Roda</string>
+    <string name="pref_ad_block_title">Bloqueig d\'anuncis</string>
+    <string name="pref_ad_block_summary">Bloqueja els anuncis i els rastreadors amb EasyList i EasyPrivacy</string>
+    <string name="selection_copy">Copia</string>
+    <string name="selection_web_search">Cerca al web</string>
+    <string name="selection_clear">Esborra</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automàtic</item>
+        <item>Activat</item>
+        <item>Desactivat</item>
+    </string-array>
 </resources>

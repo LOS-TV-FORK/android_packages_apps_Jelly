@@ -109,4 +109,18 @@
     <string name="location_dialog_allow">允許</string>
     <string name="location_dialog_block">封鎖</string>
     <string name="location_dialog_cancel">暫時拒絕</string>
+    <string name="pref_cursor_mode">虛擬游標</string>
+    <string name="cross_reload">重新載入</string>
+    <string name="cross_select">選取文字</string>
+    <string name="cross_wheel">滾輪</string>
+    <string name="pref_ad_block_title">廣告阻擋</string>
+    <string name="pref_ad_block_summary">使用 EasyList 與 EasyPrivacy 阻擋廣告與追蹤器</string>
+    <string name="selection_copy">複製</string>
+    <string name="selection_web_search">網頁搜尋</string>
+    <string name="selection_clear">清除</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>自動</item>
+        <item>開</item>
+        <item>關</item>
+    </string-array>
 </resources>

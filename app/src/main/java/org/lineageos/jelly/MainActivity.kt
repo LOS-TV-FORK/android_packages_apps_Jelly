@@ -1434,24 +1434,24 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             orientation = LinearLayout.VERTICAL
             setPadding(4, 6, 4, 6)
         }
-        val actions = listOf(
-            "Копировать" to {
+        val actions: List<Pair<Int, () -> Unit>> = listOf(
+            R.string.selection_copy to {
                 copySelection()
                 dismissSelectionMenu()
             },
-            "Веб-поиск" to {
+            R.string.selection_web_search to {
                 webView.followUrl(selectionText)
                 clearSelection()
                 dismissSelectionMenu()
             },
-            "Снять" to {
+            R.string.selection_clear to {
                 clearSelection()
                 dismissSelectionMenu()
             }
         )
-        for ((title, action) in actions) {
+        for ((titleRes, action) in actions) {
             val row = android.widget.TextView(this).apply {
-                text = title
+                text = getString(titleRes)
                 textSize = 16f
                 minWidth = (180 * density).toInt()
                 minHeight = (48 * density).toInt()

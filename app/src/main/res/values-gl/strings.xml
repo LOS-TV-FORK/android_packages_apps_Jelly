@@ -85,4 +85,18 @@
     <string name="ssl_cert_dialog_issued_on">Emitido o</string>
     <string name="ssl_cert_dialog_expires_on">Caduca o</string>
     <string name="ssl_cert_dialog_dismiss">Rexeitar</string>
+    <string name="pref_cursor_mode">Cursor virtual</string>
+    <string name="cross_reload">Recargar</string>
+    <string name="cross_select">Seleccionar texto</string>
+    <string name="cross_wheel">Roda</string>
+    <string name="pref_ad_block_title">Bloqueo de anuncios</string>
+    <string name="pref_ad_block_summary">bloquea os anuncios e os rastreadores con EasyList e EasyPrivacy</string>
+    <string name="selection_copy">Copiar</string>
+    <string name="selection_web_search">Busca web</string>
+    <string name="selection_clear">Borrar</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automático</item>
+        <item>Activado</item>
+        <item>Desactivado</item>
+    </string-array>
 </resources>

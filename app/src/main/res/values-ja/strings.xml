@@ -131,4 +131,18 @@
     <string name="protected_media_dialog_grant">許可</string>
     <string name="protected_media_dialog_deny">拒否</string>
     <string name="media_session_destroy_action">停止</string>
+    <string name="pref_cursor_mode">仮想カーソル</string>
+    <string name="cross_reload">再読み込み</string>
+    <string name="cross_select">テキストを選択</string>
+    <string name="cross_wheel">ホイール</string>
+    <string name="pref_ad_block_title">広告ブロッカー</string>
+    <string name="pref_ad_block_summary">EasyList と EasyPrivacy で広告とトラッカーをブロック</string>
+    <string name="selection_copy">コピー</string>
+    <string name="selection_web_search">ウェブ検索</string>
+    <string name="selection_clear">クリア</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>自動</item>
+        <item>オン</item>
+        <item>オフ</item>
+    </string-array>
 </resources>

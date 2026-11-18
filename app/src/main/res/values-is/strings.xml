@@ -88,4 +88,18 @@
     <string name="ssl_cert_dialog_dismiss">Hafna</string>
     <string name="location_dialog_title">Gefa staðsetningu?</string>
     <string name="location_dialog_message">%1$s vill fá að nota hnattstaðsetningu þína.</string>
+    <string name="pref_cursor_mode">Sýndarbendill</string>
+    <string name="cross_reload">Endurhlaða</string>
+    <string name="cross_select">Velja texta</string>
+    <string name="cross_wheel">Skrunhjól</string>
+    <string name="pref_ad_block_title">Auglýsingalokun</string>
+    <string name="pref_ad_block_summary">lokaðu á auglýsingar og rekjara með EasyList og EasyPrivacy</string>
+    <string name="selection_copy">Afrita</string>
+    <string name="selection_web_search">Vefsókn</string>
+    <string name="selection_clear">Hreinsa</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Sjálfvirkt</item>
+        <item>Kveikt</item>
+        <item>Slökkt</item>
+    </string-array>
 </resources>

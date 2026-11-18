@@ -132,4 +132,18 @@
     <string name="protected_media_dialog_grant">اجازه دادن</string>
     <string name="protected_media_dialog_deny">رد کردن</string>
     <string name="media_session_destroy_action">توقف</string>
+    <string name="pref_cursor_mode">مکان‌نمای مجازی</string>
+    <string name="cross_reload">بارگذاری دوباره</string>
+    <string name="cross_select">انتخاب متن</string>
+    <string name="cross_wheel">غلتک ماوس</string>
+    <string name="pref_ad_block_title">مسدودسازی تبلیغات</string>
+    <string name="pref_ad_block_summary">تبلیغات و ردیاب‌ها را با EasyList و EasyPrivacy مسدود کنید</string>
+    <string name="selection_copy">رونوشت</string>
+    <string name="selection_web_search">جست‌وجوی وب</string>
+    <string name="selection_clear">پاک کردن</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>خودکار</item>
+        <item>روشن</item>
+        <item>خاموش</item>
+    </string-array>
 </resources>

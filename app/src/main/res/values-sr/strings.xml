@@ -85,4 +85,18 @@
     <string name="ssl_cert_dialog_issued_on">Издато датума</string>
     <string name="ssl_cert_dialog_expires_on">Истиче</string>
     <string name="ssl_cert_dialog_dismiss">Одбаци</string>
+    <string name="pref_cursor_mode">Виртуелни курсор</string>
+    <string name="cross_reload">Учитај поново</string>
+    <string name="cross_select">Изабери текст</string>
+    <string name="cross_wheel">Точкић</string>
+    <string name="pref_ad_block_title">Блокирање реклама</string>
+    <string name="pref_ad_block_summary">блокирајте рекламе и пратиоце помоћу EasyList и EasyPrivacy</string>
+    <string name="selection_copy">Копирај</string>
+    <string name="selection_web_search">Веб претрага</string>
+    <string name="selection_clear">Очисти</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Аутоматски</item>
+        <item>Укључено</item>
+        <item>Искључено</item>
+    </string-array>
 </resources>

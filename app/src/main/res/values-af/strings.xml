@@ -69,4 +69,18 @@
     <string name="suggestions_provider_history">Geskiedenis</string>
     <string name="suggestions_provider_none">Geen</string>
     <string name="search_bar_hint">Soektog</string>
+    <string name="pref_cursor_mode">Virtuele wyser</string>
+    <string name="cross_reload">Herlaai</string>
+    <string name="cross_select">Kies teks</string>
+    <string name="cross_wheel">Musrat</string>
+    <string name="pref_ad_block_title">Adblokkering</string>
+    <string name="pref_ad_block_summary">Blokkeer advertensies en naspoorders met EasyList en EasyPrivacy</string>
+    <string name="selection_copy">Kopieer</string>
+    <string name="selection_web_search">Websoek</string>
+    <string name="selection_clear">Vee uit</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Outomaties</item>
+        <item>Aan</item>
+        <item>Af</item>
+    </string-array>
 </resources>

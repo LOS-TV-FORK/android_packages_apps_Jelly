@@ -114,4 +114,18 @@
     <string name="location_dialog_cancel">Negar pel momentu</string>
     <string name="protected_media_dialog_grant">Conceder</string>
     <string name="protected_media_dialog_deny">Negar</string>
+    <string name="pref_cursor_mode">Cursor virtual</string>
+    <string name="cross_reload">Recargar</string>
+    <string name="cross_select">Esbillar testu</string>
+    <string name="cross_wheel">Rueda</string>
+    <string name="pref_ad_block_title">Bloque d\'anuncios</string>
+    <string name="pref_ad_block_summary">Bloquia los anuncios y los rastreadores con EasyList y EasyPrivacy</string>
+    <string name="selection_copy">Copiar</string>
+    <string name="selection_web_search">Gueta web</string>
+    <string name="selection_clear">Baldar</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Activáu</item>
+        <item>Desactiváu</item>
+    </string-array>
 </resources>

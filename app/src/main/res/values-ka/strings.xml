@@ -117,4 +117,18 @@
     <string name="protected_media_dialog_grant">ნების დართვა</string>
     <string name="protected_media_dialog_deny">უარყოფა</string>
     <string name="media_session_destroy_action">შეწყვეტა</string>
+    <string name="pref_cursor_mode">ვირტუალური კურსორი</string>
+    <string name="cross_reload">გადატვირთვა</string>
+    <string name="cross_select">ტექსტის მონიშვნა</string>
+    <string name="cross_wheel">თაგუნას ბორბალი</string>
+    <string name="pref_ad_block_title">რეკლამის დაბლოკვა</string>
+    <string name="pref_ad_block_summary">დაბლოკეთ რეკლამები და თვალმდევრები EasyList-ითა და EasyPrivacy-ს გამოყენებით</string>
+    <string name="selection_copy">კოპირება</string>
+    <string name="selection_web_search">ვებძიება</string>
+    <string name="selection_clear">გასუფთავება</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>ავტო</item>
+        <item>ჩართული</item>
+        <item>გამორთული</item>
+    </string-array>
 </resources>

@@ -93,4 +93,18 @@
     <string name="ssl_cert_dialog_issued_on">Utfärdat den</string>
     <string name="ssl_cert_dialog_expires_on">Upphör att gälla den</string>
     <string name="ssl_cert_dialog_dismiss">Avvisa</string>
+    <string name="pref_cursor_mode">Virtuell markör</string>
+    <string name="cross_reload">Ladda om</string>
+    <string name="cross_select">Markera text</string>
+    <string name="cross_wheel">Skrollhjul</string>
+    <string name="pref_ad_block_title">Annonsblockering</string>
+    <string name="pref_ad_block_summary">blockera annonser och spårare med EasyList och EasyPrivacy</string>
+    <string name="selection_copy">Kopiera</string>
+    <string name="selection_web_search">Sök på webben</string>
+    <string name="selection_clear">Rensa</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>På</item>
+        <item>Av</item>
+    </string-array>
 </resources>

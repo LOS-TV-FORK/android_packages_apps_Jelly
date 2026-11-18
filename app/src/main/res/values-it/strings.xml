@@ -132,4 +132,18 @@
     <string name="protected_media_dialog_grant">Consenti</string>
     <string name="protected_media_dialog_deny">Nega</string>
     <string name="media_session_destroy_action">Ferma</string>
+    <string name="pref_cursor_mode">Cursore virtuale</string>
+    <string name="cross_reload">Ricarica</string>
+    <string name="cross_select">Seleziona testo</string>
+    <string name="cross_wheel">Rotellina</string>
+    <string name="pref_ad_block_title">Blocco annunci</string>
+    <string name="pref_ad_block_summary">blocca gli annunci e i tracker con EasyList ed EasyPrivacy</string>
+    <string name="selection_copy">Copia</string>
+    <string name="selection_web_search">Ricerca web</string>
+    <string name="selection_clear">Cancella</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Attivo</item>
+        <item>Disattivo</item>
+    </string-array>
 </resources>

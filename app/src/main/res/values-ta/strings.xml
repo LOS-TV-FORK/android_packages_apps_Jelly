@@ -132,4 +132,18 @@
     <string name="protected_media_dialog_grant">ஏற்பிசை</string>
     <string name="protected_media_dialog_deny">மறு</string>
     <string name="media_session_destroy_action">நிறுத்து</string>
+    <string name="pref_cursor_mode">மெய்நிகர் சுட்டி</string>
+    <string name="cross_reload">மீண்டும் பதிவேற்று</string>
+    <string name="cross_select">உரையைத் தேர்ந்தெடு</string>
+    <string name="cross_wheel">சக்கரம்</string>
+    <string name="pref_ad_block_title">விளம்பரத் தடுப்பு</string>
+    <string name="pref_ad_block_summary">EasyList மற்றும் EasyPrivacy மூலம் விளம்பரங்களையும் கண்காணிப்புகளையும் தடுக்கவும்</string>
+    <string name="selection_copy">நகலெடு</string>
+    <string name="selection_web_search">இணையத் தேடல்</string>
+    <string name="selection_clear">நீக்கு</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>தானியங்கி</item>
+        <item>இயக்கம்</item>
+        <item>முடக்கம்</item>
+    </string-array>
 </resources>

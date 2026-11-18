@@ -85,4 +85,18 @@
     <string name="ssl_cert_dialog_issued_on">الصادر في</string>
     <string name="ssl_cert_dialog_expires_on">تنتهي صلاحيته في</string>
     <string name="ssl_cert_dialog_dismiss">تجاهل</string>
+    <string name="pref_cursor_mode">المؤشر الافتراضي</string>
+    <string name="cross_reload">إعادة التحميل</string>
+    <string name="cross_select">تحديد النص</string>
+    <string name="cross_wheel">عجلة الفأرة</string>
+    <string name="pref_ad_block_title">حظر الإعلانات</string>
+    <string name="pref_ad_block_summary">احظر الإعلانات وأدوات التتبع باستخدام EasyList وEasyPrivacy</string>
+    <string name="selection_copy">نسخ</string>
+    <string name="selection_web_search">بحث الويب</string>
+    <string name="selection_clear">مسح</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>تلقائي</item>
+        <item>تشغيل</item>
+        <item>إيقاف</item>
+    </string-array>
 </resources>

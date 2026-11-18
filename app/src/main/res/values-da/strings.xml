@@ -95,4 +95,18 @@
     <string name="ssl_cert_dialog_issued_on">Udstedt d.</string>
     <string name="ssl_cert_dialog_expires_on">Udløber d.</string>
     <string name="ssl_cert_dialog_dismiss">Afvis</string>
+    <string name="pref_cursor_mode">Virtuel markør</string>
+    <string name="cross_reload">Genindlæs</string>
+    <string name="cross_select">Vælg tekst</string>
+    <string name="cross_wheel">Musehjul</string>
+    <string name="pref_ad_block_title">Annonceblokering</string>
+    <string name="pref_ad_block_summary">blokering af annoncer og sporere med EasyList og EasyPrivacy</string>
+    <string name="selection_copy">Kopiér</string>
+    <string name="selection_web_search">Websøg</string>
+    <string name="selection_clear">Ryd</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>Til</item>
+        <item>Fra</item>
+    </string-array>
 </resources>

@@ -66,4 +66,18 @@
     <string name="ssl_cert_dialog_dismiss">Адхіліць</string>
     <string name="location_dialog_message">%1$s хоча атрымаць доступ да вашага месцазнаходжання.</string>
     <string name="location_dialog_allow">Дазволіць</string>
+    <string name="pref_cursor_mode">Віртуальны курсор</string>
+    <string name="cross_reload">Абнавіць</string>
+    <string name="cross_select">Вылучыць тэкст</string>
+    <string name="cross_wheel">Кола</string>
+    <string name="pref_ad_block_title">Блакіраванне рэкламы</string>
+    <string name="pref_ad_block_summary">блакіруйце рэкламу і трэкеры з дапамогай EasyList і EasyPrivacy</string>
+    <string name="selection_copy">Капіяваць</string>
+    <string name="selection_web_search">Вэб-пошук</string>
+    <string name="selection_clear">Ачысціць</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Аўта</item>
+        <item>Увімк.</item>
+        <item>Выкл.</item>
+    </string-array>
 </resources>

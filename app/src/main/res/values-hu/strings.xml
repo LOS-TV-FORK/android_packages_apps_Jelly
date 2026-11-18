@@ -132,4 +132,18 @@
     <string name="protected_media_dialog_grant">Engedélyezés</string>
     <string name="protected_media_dialog_deny">Tiltás</string>
     <string name="media_session_destroy_action">Leállítás</string>
+    <string name="pref_cursor_mode">Virtuális kurzor</string>
+    <string name="cross_reload">Újratöltés</string>
+    <string name="cross_select">Szöveg kijelölése</string>
+    <string name="cross_wheel">Egérgörgő</string>
+    <string name="pref_ad_block_title">Reklámblokkolás</string>
+    <string name="pref_ad_block_summary">blokkolja a hirdetéseket és a nyomkövetőket az EasyList és az EasyPrivacy segítségével</string>
+    <string name="selection_copy">Másolás</string>
+    <string name="selection_web_search">Webes keresés</string>
+    <string name="selection_clear">Törlés</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatikus</item>
+        <item>Be</item>
+        <item>Ki</item>
+    </string-array>
 </resources>

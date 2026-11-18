@@ -85,4 +85,18 @@
     <string name="ssl_cert_dialog_issued_on">Utjûn op</string>
     <string name="ssl_cert_dialog_expires_on">Ferrint op</string>
     <string name="ssl_cert_dialog_dismiss">Slute</string>
+    <string name="pref_cursor_mode">Virtuele cursor</string>
+    <string name="cross_reload">Opnij lade</string>
+    <string name="cross_select">Tekst selektearje</string>
+    <string name="cross_wheel">Mûswiel</string>
+    <string name="pref_ad_block_title">Adblokkering</string>
+    <string name="pref_ad_block_summary">blokkearje advertinsjes en trackers mei EasyList en EasyPrivacy</string>
+    <string name="selection_copy">Kopiearje</string>
+    <string name="selection_web_search">Sykje op it web</string>
+    <string name="selection_clear">Wiskje</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Automatysk</item>
+        <item>Oan</item>
+        <item>Út</item>
+    </string-array>
 </resources>

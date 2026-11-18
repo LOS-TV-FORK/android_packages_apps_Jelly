@@ -131,4 +131,18 @@
     <string name="protected_media_dialog_grant">Cấp phép</string>
     <string name="protected_media_dialog_deny">Từ chối</string>
     <string name="media_session_destroy_action">Dừng lại</string>
+    <string name="pref_cursor_mode">Con trỏ ảo</string>
+    <string name="cross_reload">Tải lại</string>
+    <string name="cross_select">Chọn văn bản</string>
+    <string name="cross_wheel">Con lăn chuột</string>
+    <string name="pref_ad_block_title">Chặn quảng cáo</string>
+    <string name="pref_ad_block_summary">chặn quảng cáo và công cụ theo dõi bằng EasyList và EasyPrivacy</string>
+    <string name="selection_copy">Sao chép</string>
+    <string name="selection_web_search">Tìm kiếm trên web</string>
+    <string name="selection_clear">Xóa</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Tự động</item>
+        <item>Bật</item>
+        <item>Tắt</item>
+    </string-array>
 </resources>

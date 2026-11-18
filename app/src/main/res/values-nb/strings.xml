@@ -79,4 +79,18 @@
     <string name="ssl_cert_dialog_issued_on">Utstedt den</string>
     <string name="ssl_cert_dialog_expires_on">Utløper den</string>
     <string name="ssl_cert_dialog_dismiss">Avvis</string>
+    <string name="pref_cursor_mode">Virtuell markør</string>
+    <string name="cross_reload">Last inn på nytt</string>
+    <string name="cross_select">Velg tekst</string>
+    <string name="cross_wheel">Musehjul</string>
+    <string name="pref_ad_block_title">Annonseblokkering</string>
+    <string name="pref_ad_block_summary">blokker annonser og sporere med EasyList og EasyPrivacy</string>
+    <string name="selection_copy">Kopier</string>
+    <string name="selection_web_search">Nettsøk</string>
+    <string name="selection_clear">Tøm</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Auto</item>
+        <item>På</item>
+        <item>Av</item>
+    </string-array>
 </resources>

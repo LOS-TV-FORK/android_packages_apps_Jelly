@@ -70,4 +70,18 @@
     <string name="search_bar_hint">Nadi</string>
     <string name="ssl_cert_dialog_domain">Taɣult</string>
     <string name="ssl_cert_dialog_dismiss">Suref</string>
+    <string name="pref_cursor_mode">Asedmed aziran</string>
+    <string name="cross_reload">Ales asider</string>
+    <string name="cross_select">Fren aḍris</string>
+    <string name="cross_wheel">Ruwila</string>
+    <string name="pref_ad_block_title">Aḥbas n ecal</string>
+    <string name="pref_ad_block_summary">seḥbes ecal akked ineqqaden s EasyList d EasyPrivacy</string>
+    <string name="selection_copy">Nɣel</string>
+    <string name="selection_web_search">Nadi ɣef web</string>
+    <string name="selection_clear">Sfeḍ</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Awurman</item>
+        <item>Irmed</item>
+        <item>Yensa</item>
+    </string-array>
 </resources>

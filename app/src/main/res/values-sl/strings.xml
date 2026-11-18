@@ -134,4 +134,18 @@
     <string name="protected_media_dialog_grant">Odobri</string>
     <string name="protected_media_dialog_deny">Zavrni</string>
     <string name="media_session_destroy_action">Ustavi</string>
+    <string name="pref_cursor_mode">Navidezni kazalec</string>
+    <string name="cross_reload">Osveži</string>
+    <string name="cross_select">Izberi besedilo</string>
+    <string name="cross_wheel">Kolešček</string>
+    <string name="pref_ad_block_title">Blokiranje oglasov</string>
+    <string name="pref_ad_block_summary">blokiranje oglasov in sledilnikov z EasyList in EasyPrivacy</string>
+    <string name="selection_copy">Kopiraj</string>
+    <string name="selection_web_search">Spletno iskanje</string>
+    <string name="selection_clear">Počisti</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>Samodejno</item>
+        <item>Vklopljeno</item>
+        <item>Izklopljeno</item>
+    </string-array>
 </resources>

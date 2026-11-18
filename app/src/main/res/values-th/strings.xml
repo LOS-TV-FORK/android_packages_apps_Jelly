@@ -77,4 +77,18 @@
     <string name="ssl_cert_dialog_issued_on">ออกเมื่อ</string>
     <string name="ssl_cert_dialog_expires_on">หมดอายุใน</string>
     <string name="ssl_cert_dialog_dismiss">ยกเลิก</string>
+    <string name="pref_cursor_mode">เคอร์เซอร์เสมือน</string>
+    <string name="cross_reload">โหลดใหม่</string>
+    <string name="cross_select">เลือกข้อความ</string>
+    <string name="cross_wheel">ล้อเมาส์</string>
+    <string name="pref_ad_block_title">บล็อกโฆษณา</string>
+    <string name="pref_ad_block_summary">บล็อกโฆษณาและตัวติดตามด้วย EasyList และ EasyPrivacy</string>
+    <string name="selection_copy">คัดลอก</string>
+    <string name="selection_web_search">ค้นหาเว็บ</string>
+    <string name="selection_clear">ล้าง</string>
+    <string-array name="pref_cursor_mode_entries">
+        <item>อัตโนมัติ</item>
+        <item>เปิด</item>
+        <item>ปิด</item>
+    </string-array>
 </resources>
