@@ -449,7 +449,8 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     override fun onResume() {
         super.onResume()
-        cursorOverlay.isVisible = cursorUiEnabled()
+        cursorOverlay.isVisible = cursorUiEnabled() && !realPointerActive
+        if (cursorOverlay.isVisible) scheduleCursorHide()
         if (backgroundShortcutId == null) webView.onResume()
         CookieManager.getInstance()
             .setAcceptCookie(!incognito && sharedPreferencesExt.cookiesEnabled)
@@ -724,7 +725,8 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         appBarLayout.visibility = View.GONE
         webView.visibility = View.GONE
         if (cursorUiEnabled()) {
-            cursorOverlay.isVisible = true
+            cursorOverlay.isVisible = !realPointerActive
+            if (cursorOverlay.isVisible) scheduleCursorHide()
             // customView was added to the window content parent, so bringing only the
             // overlay (a child deeper in the hierarchy) would keep it painted under the
             // video. Re-order the overlay's own branch to the front as well.
@@ -995,6 +997,8 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> {
                 if (event.action == KeyEvent.ACTION_DOWN) {
+                    // stepCursor re-shows the cursor; the real-pointer override ends here.
+                    realPointerActive = false
                     if (heldOk && !okTapDone && !cursorOverlay.isPressPending) {
                         // Arrows while OK is held (before hold-tap) = drag gesture.
                         cursorOverlay.pressDown()
@@ -1021,6 +1025,42 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private var scrollTicks = 0
 
     private val mouseGone = Runnable { cursorOverlay.hoverEnabled = true }
+    private var realPointerActive = false
+
+    private val cursorIdleHide = Runnable {
+        if (!realPointerActive) cursorOverlay.isVisible = false
+    }
+
+    /** Re-shows the cursor on movement and hides it again 5s after it stops. */
+    private fun scheduleCursorHide() {
+        window.decorView.removeCallbacks(cursorIdleHide)
+        window.decorView.postDelayed(cursorIdleHide, 5000L)
+    }
+
+    /** A physical pointer took over: hide the virtual cursor until arrows are used again. */
+    private fun yieldToRealPointer() {
+        // Over a fullscreen video the OS pointer is not drawn at all (secure/device
+        // composited layer), so the virtual cursor is the only visible one: keep it.
+        if (customView != null) return
+        if (!realPointerActive) {
+            realPointerActive = true
+            stopArrowHold()
+            window.decorView.removeCallbacks(cursorIdleHide)
+            cursorOverlay.isVisible = false
+        }
+    }
+
+    /**
+     * True only for motion events coming from an actual mouse device. Synthetic events
+     * (the overlay's own hover injection) carry no hardware device and must not count:
+     * DecorView routes even rootView-initiated dispatches back through the activity,
+     * so without this check the virtual cursor would hide itself on every settle.
+     */
+    private fun isRealMouseDevice(event: MotionEvent): Boolean {
+        val device = event.device ?: return false
+        return !device.isVirtual &&
+            device.sources and android.view.InputDevice.SOURCE_MOUSE != 0
+    }
     private var okDownTime = 0L
     private var heldOk = false
     private var okTapDone = false
@@ -1072,6 +1112,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     }
 
     private fun stepCursor(keyCode: Int, step: Float) {
+        // Any arrow movement summons the cursor back and restarts its idle timer.
+        cursorOverlay.isVisible = true
+        scheduleCursorHide()
         val dx = when (keyCode) {
             KeyEvent.KEYCODE_DPAD_LEFT -> -step
             KeyEvent.KEYCODE_DPAD_RIGHT -> step
@@ -1123,6 +1166,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.isFromSource(android.view.InputDevice.SOURCE_MOUSE)) {
             if (cursorUiEnabled()) {
+                if (isRealMouseDevice(event)) {
+                    yieldToRealPointer()
+                }
                 cursorOverlay.hoverEnabled = false
                 window.decorView.removeCallbacks(mouseGone)
                 window.decorView.postDelayed(mouseGone, 3000L)
@@ -1136,6 +1182,16 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             }
         }
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (cursorUiEnabled() &&
+            event.action == MotionEvent.ACTION_HOVER_MOVE &&
+            isRealMouseDevice(event)
+        ) {
+            yieldToRealPointer()
+        }
+        return super.dispatchGenericMotionEvent(event)
     }
 
     // The WebView selection menu lives in the WebView's own process window and cannot be
