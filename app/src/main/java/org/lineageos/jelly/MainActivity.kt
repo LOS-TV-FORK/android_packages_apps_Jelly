@@ -1405,7 +1405,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         webView.evaluateJavascript("window.getSelection().toString()") { value ->
             val text = value?.removeSurrounding("\"")?.replace("\\n", "\n") ?: ""
             if (text.isBlank()) {
-                clearSelection()
+                if (selectionMode) {
+                    clearSelection()
+                }
                 onResult?.invoke(false)
             } else {
                 selectionText = text

@@ -217,24 +217,43 @@ class WebViewExt @JvmOverloads constructor(
      * callback. Blur the field when the keyboard goes away so that stops; arrow navigation
      * back into the field brings the keyboard back.
      */
+    private var pendingBlur: Runnable? = null
+
     private fun setupImeAutoBlur() {
         ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
             val visible = insets.isVisible(WindowInsetsCompat.Type.ime())
             if (imeVisible && !visible && settings.javaScriptEnabled) {
-                evaluateJavascript(
-                    "(function() {" +
-                        "var el = document.activeElement;" +
-                        "if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||" +
-                        "    el.isContentEditable)) {" +
-                        "  el.blur();" +
-                        "}" +
-                        "})();",
-                    null
-                )
+                // Relayouts (e.g. the cursor overlay hiding when a real pointer takes
+                // over) re-deliver insets while the IME is still animating in, and this
+                // callback can report the keyboard as gone mid-animation. Blur only if
+                // it stays hidden; a click in a field that re-shows the keyboard cancels.
+                cancelPendingBlur()
+                val blur = Runnable {
+                    pendingBlur = null
+                    evaluateJavascript(
+                        "(function() {" +
+                            "var el = document.activeElement;" +
+                            "if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||" +
+                            "    el.isContentEditable)) {" +
+                            "  el.blur();" +
+                            "}" +
+                            "})();",
+                        null
+                    )
+                }
+                pendingBlur = blur
+                postDelayed(blur, 400L)
+            } else if (visible) {
+                cancelPendingBlur()
             }
             imeVisible = visible
             ViewCompat.onApplyWindowInsets(view, insets)
         }
+    }
+
+    private fun cancelPendingBlur() {
+        pendingBlur?.let { removeCallbacks(it) }
+        pendingBlur = null
     }
 
     val snap: Bitmap
