@@ -113,6 +113,12 @@
     <string name="pref_start_page_dialog_reset">Reset</string>
     <!-- Settings: privacy and security category -->
     <string name="pref_privacy_security">Privacy &amp; security</string>
+    <!-- Cursor action cross: reload the page (up arm) -->
+    <string name="cross_reload">Reload</string>
+    <!-- Cursor action cross: start text selection (left arm) -->
+    <string name="cross_select">Select text</string>
+    <!-- Cursor action cross: enter mouse wheel mode (right arm) -->
+    <string name="cross_wheel">Wheel</string>
     <!-- Settings: ad blocking title -->
     <string name="pref_ad_block_title">Ad blocking</string>
     <!-- Settings: ad blocking summary -->

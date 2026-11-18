@@ -383,6 +383,10 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 when {
+                    crossOpen -> closeCross()
+
+                    wheelMode -> exitWheelMode()
+
                     urlBarLayout.currentMode == UrlBarLayout.UrlBarMode.SEARCH -> {
                         urlBarLayout.currentMode = UrlBarLayout.UrlBarMode.URL
                     }
@@ -968,6 +972,19 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         when (event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
             KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                if (event.action == KeyEvent.ACTION_DOWN && crossOpen) {
+                    // Only a fresh (non-repeating) press arms the close-on-release; the
+                    // auto-repeat of the long press that opened the cross must not, or the
+                    // cross would vanish the moment OK is released.
+                    if (event.repeatCount == 0) crossSwallowOk = true
+                    return true
+                }
+                if (event.action == KeyEvent.ACTION_UP && crossSwallowOk) {
+                    crossSwallowOk = false
+                    // OK executes the highlighted arm, or just closes when nothing is lit.
+                    actOnFocusedArm()
+                    return true
+                }
                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
                     okDownTime = event.eventTime
                     heldOk = true
@@ -976,6 +993,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 } else if (event.action == KeyEvent.ACTION_UP && heldOk) {
                     heldOk = false
                     window.decorView.removeCallbacks(okHoldTap)
+                    if (crossOpen) return true // release of the long press that opened the cross
                     if (selectionMode && selectionText.isNotEmpty() && selectionMenu == null &&
                         !cursorOverlay.isPressPending && !okTapDone
                     ) {
@@ -999,6 +1017,17 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     // stepCursor re-shows the cursor; the real-pointer override ends here.
                     realPointerActive = false
+                    if (crossOpen) {
+                        focusCrossArm(event.keyCode)
+                        return true
+                    }
+                    if (wheelMode) {
+                        if (heldArrowKey != event.keyCode) {
+                            heldArrowKey = event.keyCode
+                            startWheelHold(event.keyCode)
+                        }
+                        return true
+                    }
                     if (heldOk && !okTapDone && !cursorOverlay.isPressPending) {
                         // Arrows while OK is held (before hold-tap) = drag gesture.
                         cursorOverlay.pressDown()
@@ -1011,8 +1040,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                         stepCursor(event.keyCode, 15f)
                         startArrowHold(event.keyCode)
                     }
-                } else if (event.action == KeyEvent.ACTION_UP && heldArrowKey == event.keyCode) {
-                    stopArrowHold()
+                } else if (event.action == KeyEvent.ACTION_UP) {
+                    if (heldArrowKey == event.keyCode) stopArrowHold()
+                    if (wheelHoldKey == event.keyCode) stopWheelHold()
                 }
                 return true
             }
@@ -1028,7 +1058,9 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private var realPointerActive = false
 
     private val cursorIdleHide = Runnable {
-        if (!realPointerActive) cursorOverlay.isVisible = false
+        if (!realPointerActive && !wheelMode && !crossOpen) {
+            cursorOverlay.isVisible = false
+        }
     }
 
     /** Re-shows the cursor on movement and hides it again 5s after it stops. */
@@ -1041,7 +1073,8 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private fun yieldToRealPointer() {
         // Over a fullscreen video the OS pointer is not drawn at all (secure/device
         // composited layer), so the virtual cursor is the only visible one: keep it.
-        if (customView != null) return
+        // Wheel mode also needs the cursor visible: it is the wheel's pointer position.
+        if (customView != null || wheelMode) return
         if (!realPointerActive) {
             realPointerActive = true
             stopArrowHold()
@@ -1065,15 +1098,156 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     private var heldOk = false
     private var okTapDone = false
 
+    private var crossOpen = false
+    private var crossSwallowOk = false
+    private var crossFocusArm = CursorOverlay.ARM_NONE
+    private var wheelMode = false
+    private var wheelHoldKey = -1
+    private var wheelHoldTick: Runnable? = null
+    private var wheelTicks = 0
+
     private val okHoldTap = Runnable {
         if (!heldOk) return@Runnable
         okTapDone = true
         if (selectionMode) return@Runnable
-        // Start drag-selection: the cursor keeps moving with the arrow keys and the text
-        // between the hold point and the cursor stays highlighted, like dragging with a mouse.
-        selectionMode = true
-        selAnchorCss = cssCursor(cursorOverlay.cursorX, cursorOverlay.cursorY)
-        updateSelectionDrag()
+        // Long OK opens the action cross instead of grabbing the page directly.
+        openCross()
+    }
+
+    private fun openCross() {
+        if (selectionMode || wheelMode) return
+        crossOpen = true
+        crossFocusArm = CursorOverlay.ARM_NONE
+        cursorOverlay.setFocusedArm(CursorOverlay.ARM_NONE)
+        cursorOverlay.isVisible = true
+        window.decorView.removeCallbacks(cursorIdleHide)
+        cursorOverlay.showCross()
+    }
+
+    private fun closeCross() {
+        crossOpen = false
+        crossSwallowOk = false
+        crossFocusArm = CursorOverlay.ARM_NONE
+        cursorOverlay.setFocusedArm(CursorOverlay.ARM_NONE)
+        cursorOverlay.hideCross()
+        scheduleCursorHide()
+    }
+
+    /** Arrows only move the highlight; OK executes the focused arm. */
+    private fun focusCrossArm(keyCode: Int) {
+        val arm = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> CursorOverlay.ARM_UP
+            KeyEvent.KEYCODE_DPAD_LEFT -> CursorOverlay.ARM_LEFT
+            KeyEvent.KEYCODE_DPAD_RIGHT -> CursorOverlay.ARM_RIGHT
+            else -> return // the bottom arm is reserved for a future action
+        }
+        crossFocusArm = arm
+        cursorOverlay.setFocusedArm(arm)
+    }
+
+    private fun actOnFocusedArm() {
+        when (crossFocusArm) {
+            CursorOverlay.ARM_UP -> {
+                closeCross()
+                webView.reload()
+            }
+            CursorOverlay.ARM_LEFT -> {
+                closeCross()
+                // Drag-selection: the arrows move the cursor and the text between the
+                // anchor point and the cursor stays highlighted, like dragging a mouse.
+                selectionMode = true
+                selAnchorCss = cssCursor(cursorOverlay.cursorX, cursorOverlay.cursorY)
+                updateSelectionDrag()
+            }
+            CursorOverlay.ARM_RIGHT -> {
+                closeCross()
+                enterWheelMode()
+            }
+            else -> closeCross()
+        }
+    }
+
+    private fun enterWheelMode() {
+        wheelMode = true
+        cursorOverlay.isVisible = true
+        window.decorView.removeCallbacks(cursorIdleHide)
+        cursorOverlay.pinIcon("all_scroll")
+    }
+
+    private fun exitWheelMode() {
+        wheelMode = false
+        stopWheelHold()
+        cursorOverlay.unpinIcon()
+        scheduleCursorHide()
+    }
+
+    private fun startWheelHold(keyCode: Int) {
+        stopWheelHold()
+        wheelHoldKey = keyCode
+        wheelTicks = 0
+        // Same rhythm as the edge scroll in stepCursor: immediate start, then a 16ms
+        // tick accelerating from 4 to 14 view pixels per frame.
+        sendWheelScroll(keyCode, 4f)
+        val tick = object : Runnable {
+            override fun run() {
+                wheelTicks++
+                val amount = (4f + wheelTicks * 0.4f).coerceAtMost(14f)
+                sendWheelScroll(wheelHoldKey, amount)
+                window.decorView.postDelayed(this, 16L)
+            }
+        }
+        wheelHoldTick = tick
+        window.decorView.post(tick)
+    }
+
+    private fun stopWheelHold() {
+        wheelHoldTick?.let { window.decorView.removeCallbacks(it) }
+        wheelHoldTick = null
+        wheelHoldKey = -1
+    }
+
+    /**
+     * Scrolls what a real mouse wheel would scroll at the cursor point: the nearest
+     * scrollable ancestor of the element under the cursor, falling back to the page.
+     * A hand-made ACTION_SCROLL never reaches Blink (ViewGroup does not forward
+     * non-hover generic events to children) and an untrusted WheelEvent has no default
+     * action, so the same result is achieved by driving scrollBy() on that element.
+     * [amount] is in view pixels (edge-scroll units) converted to CSS pixels.
+     */
+    private fun sendWheelScroll(keyCode: Int, amount: Float) {
+        val wl = IntArray(2)
+        webView.getLocationInWindow(wl)
+        val density = resources.displayMetrics.density
+        val cssX = (cursorOverlay.cursorX - wl[0]) / density
+        val cssY = (cursorOverlay.cursorY - wl[1]) / density
+        if (cssX < 0f || cssY < 0f || cssX > webView.width / density ||
+            cssY > webView.height / density
+        ) {
+            return
+        }
+        val notch = amount / density
+        var dx = 0f
+        var dy = 0f
+        var useX = 0
+        var useY = 0
+        when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> { dy = -notch; useY = 1 }
+            KeyEvent.KEYCODE_DPAD_DOWN -> { dy = notch; useY = 1 }
+            KeyEvent.KEYCODE_DPAD_LEFT -> { dx = -notch; useX = 1 }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> { dx = notch; useX = 1 }
+            else -> return
+        }
+        val js = "(function(){var el=document.elementFromPoint($cssX,$cssY);" +
+            "var t=el;" +
+            "while(t){" +
+            "var s=getComputedStyle(t);" +
+            "if(($useY&&t.scrollHeight>t.clientHeight+1&&" +
+            "(s.overflowY==='auto'||s.overflowY==='scroll'))||" +
+            "($useX&&t.scrollWidth>t.clientWidth+1&&" +
+            "(s.overflowX==='auto'||s.overflowX==='scroll')))break;" +
+            "t=t.parentElement;}" +
+            "if(t)t.scrollBy($dx,$dy);else window.scrollBy($dx,$dy);})();"
+        webView.evaluateJavascript(js, null)
     }
 
     private fun applySelectionResult(value: String?) {
@@ -1427,6 +1601,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     }
 
     private fun updateCursorIcon(x: Float, y: Float) {
+        if (wheelMode) return // the wheel mode pins its own icon
         val wl = IntArray(2)
         webView.getLocationInWindow(wl)
         val wx = x - wl[0]

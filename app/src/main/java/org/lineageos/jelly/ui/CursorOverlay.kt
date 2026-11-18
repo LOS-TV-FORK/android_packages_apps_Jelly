@@ -5,15 +5,21 @@
 
 package org.lineageos.jelly.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import org.lineageos.jelly.R
@@ -32,6 +38,10 @@ class CursorOverlay @JvmOverloads constructor(
         private val HIGHLIGHT_PAINT = Paint().apply {
             color = Color.argb(0x66, 0x4A, 0x90, 0xD9)
         }
+        const val ARM_NONE = -1
+        const val ARM_UP = 0
+        const val ARM_LEFT = 1
+        const val ARM_RIGHT = 2
     }
 
     var cursorX = 0f
@@ -65,7 +75,26 @@ class CursorOverlay @JvmOverloads constructor(
     /** Notified when the cursor settles so the activity can resolve the icon (JS hit test). */
     var iconCallback: (() -> Unit)? = null
 
+    private var iconPinned = false
+
+    /** Hit-test driven icon updates; ignored while a mode pins its own icon. */
     fun setIconKind(kind: String) {
+        if (iconPinned) return
+        applyIcon(kind)
+    }
+
+    /** Pins a mode icon (e.g. "all_scroll" for wheel mode) until [unpinIcon]. */
+    fun pinIcon(kind: String) {
+        iconPinned = true
+        applyIcon(kind)
+    }
+
+    fun unpinIcon() {
+        iconPinned = false
+        applyIcon("arrow")
+    }
+
+    private fun applyIcon(kind: String) {
         val d = if (kind == "arrow") arrow
         else arrowCache.getOrPut(kind) { loadSystemIcon("pointer_$kind") ?: arrow }
         setArrowDrawable(d)
@@ -246,6 +275,211 @@ class CursorOverlay @JvmOverloads constructor(
         return loc
     }
 
+    // ---------------------------------------------------------------- cross menu
+
+    /**
+     * The action cross: opens around the cursor on a long OK press and offers the arms
+     * reload (up), text selection (left) and mouse wheel (right). Keys act on it directly,
+     * so it only needs to look right and follow the cursor.
+     */
+    private val density = context.resources.displayMetrics.density
+    private val scrimPaint = Paint()
+    private val diamondFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#CC6E7280")
+    }
+    private val diamondStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.parseColor("#F2E3E6EB")
+        strokeWidth = 2f * density
+    }
+    private val ringFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#80000000") }
+    private val ringStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.parseColor("#E6FFFFFF")
+        strokeWidth = 1.6f * density
+    }
+    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        textSize = 14f * context.resources.displayMetrics.scaledDensity
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        textAlign = Paint.Align.CENTER
+    }
+    private val diamondPath = Path()
+    private val diamondRect = RectF()
+    private val rotate45 = Matrix().apply { setRotate(45f) }
+
+    var crossProgress = 0f
+        private set
+
+    private var crossAnim: ValueAnimator? = null
+
+    private val chipFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#E64A90D9") }
+    private val chipStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.WHITE
+        strokeWidth = 1.4f * density
+    }
+    private var focusedArm = ARM_NONE
+    private var focusGlow = 0f
+    private var focusAnim: ValueAnimator? = null
+
+    /** Highlights the arm the arrows currently point at; OK acts on it. */
+    fun setFocusedArm(arm: Int) {
+        if (focusedArm == arm) return
+        focusedArm = arm
+        focusAnim?.cancel()
+        if (arm == ARM_NONE) {
+            focusGlow = 0f
+            invalidate()
+            return
+        }
+        focusAnim = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 110L
+            addUpdateListener {
+                focusGlow = it.animatedValue as Float
+                invalidate()
+            }
+            start()
+        }
+    }
+
+    fun showCross() {
+        crossAnim?.cancel()
+        crossAnim = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 170L
+            interpolator = DecelerateInterpolator()
+            addUpdateListener {
+                crossProgress = it.animatedValue as Float
+                invalidate()
+            }
+            start()
+        }
+    }
+
+    fun hideCross() {
+        crossAnim?.cancel()
+        crossAnim = null
+        crossProgress = 0f
+        invalidate()
+    }
+
+    private fun drawCross(canvas: Canvas) {
+        val p = crossProgress
+        val cx = cursorX
+        val cy = cursorY
+        scrimPaint.color = Color.argb((0x50 * p).toInt(), 0, 0, 0)
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), scrimPaint)
+        val icon = 20f * density
+        val textGap = 8f * density
+        val wReload = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_reload))
+        val wSelect = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_select))
+        val wWheel = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_wheel))
+        val armLen = maxOf(wReload, maxOf(wSelect, wWheel))
+        val radius = armLen + 56f * density
+        diamondFill.alpha = (0xCC * p).toInt()
+        diamondStroke.alpha = (0xF2 * p).toInt()
+        ringFill.alpha = (0x80 * p).toInt()
+        ringStroke.alpha = (0xE6 * p).toInt()
+        labelPaint.alpha = (255 * p).toInt()
+        // The ring belongs to the panel center. With room around the cursor the panel is
+        // centered on it; near an edge the panel slides away so it fits on screen AND the
+        // cursor stays clear of the diamond (pushed out to just beyond its corner).
+        val ring = 26f * density
+        val need = radius + ring + 6f * density
+        // Centered on the cursor whenever it fits; otherwise slide fully to the free
+        // side, far enough that the cursor (and its ring radius) stays outside the diamond.
+        val pcx = (when {
+            cx < radius -> cx + need
+            cx > width - radius -> cx - need
+            else -> cx
+        }).coerceIn(minOf(radius, width / 2f), maxOf(width - radius, width / 2f))
+        val pcy = (when {
+            cy < radius -> cy + need
+            cy > height - radius -> cy - need
+            else -> cy
+        }).coerceIn(minOf(radius, height / 2f), maxOf(height - radius, height / 2f))
+        canvas.save()
+        canvas.scale(0.86f + 0.14f * p, 0.86f + 0.14f * p, pcx, pcy)
+        // Rounded diamond panel: a round rect rotated by 45 degrees around the cursor.
+        val side = radius * 0.7071f
+        diamondRect.set(pcx - side, pcy - side, pcx + side, pcy + side)
+        diamondPath.reset()
+        diamondPath.addRoundRect(diamondRect, 26f * density, 26f * density, Path.Direction.CW)
+        rotate45.setRotate(45f, pcx, pcy)
+        diamondPath.transform(rotate45)
+        canvas.drawPath(diamondPath, diamondFill)
+        canvas.drawPath(diamondPath, diamondStroke)
+        // Ring at the center of the cross.
+        canvas.drawCircle(pcx, pcy, ring, ringFill)
+        canvas.drawCircle(pcx, pcy, ring, ringStroke)
+        // Focus chip behind the icon of the arm the arrows point at.
+        if (focusedArm != ARM_NONE && focusGlow > 0f) {
+            val shift = 11f * density
+            val chip = icon / 2f + 7f * density
+            val (chipCx, chipCy) = when (focusedArm) {
+                ARM_LEFT -> Pair(pcx - radius * 0.52f - wSelect / 2f + icon / 2f, pcy)
+                ARM_RIGHT -> Pair(pcx + radius * 0.52f + wWheel / 2f - icon / 2f, pcy)
+                else -> Pair(pcx, pcy - radius * 0.52f - shift)
+            }
+            val glow = focusGlow * crossProgress
+            chipFill.alpha = (0xE6 * glow).toInt()
+            chipStroke.alpha = (0xCC * glow).toInt()
+            canvas.drawCircle(chipCx, chipCy, chip, chipFill)
+            canvas.drawCircle(chipCx, chipCy, chip, chipStroke)
+        }
+        // Arms sit on the axes at the diamond's corners (bottom axis reserved).
+        drawArmRow(canvas, context.getString(R.string.cross_select),
+            R.drawable.ic_cross_select, pcx - radius * 0.52f, pcy, icon, textGap, iconLeft = true)
+        drawArmRow(canvas, context.getString(R.string.cross_wheel),
+            R.drawable.ic_cross_wheel, pcx + radius * 0.52f, pcy, icon, textGap, iconLeft = false)
+        drawArmTop(canvas, context.getString(R.string.cross_reload),
+            R.drawable.ic_cross_reload, pcx, pcy - radius * 0.52f, icon)
+        canvas.restore()
+    }
+
+    private fun drawArmRow(
+        canvas: Canvas, label: String, iconRes: Int,
+        centerX: Float, centerY: Float, icon: Float, textGap: Float, iconLeft: Boolean
+    ) {
+        val textW = labelPaint.measureText(label)
+        val total = icon + textGap + textW
+        val left = centerX - total / 2f
+        val iconCx = if (iconLeft) left + icon / 2f else left + total - icon / 2f
+        val textCx = if (iconLeft) left + icon + textGap + textW / 2f else left + textW / 2f
+        drawGlyph(canvas, iconRes, iconCx, centerY, icon)
+        canvas.drawText(
+            label, textCx, centerY - (labelPaint.ascent() + labelPaint.descent()) / 2f, labelPaint
+        )
+    }
+
+    private fun drawArmTop(
+        canvas: Canvas, label: String, iconRes: Int, centerX: Float, centerY: Float, icon: Float
+    ) {
+        val shift = 11f * density
+        drawGlyph(canvas, iconRes, centerX, centerY - shift, icon)
+        canvas.drawText(
+            label, centerX, centerY + shift - (labelPaint.ascent() + labelPaint.descent()) / 2f,
+            labelPaint
+        )
+    }
+
+    private fun drawGlyph(canvas: Canvas, iconRes: Int, cx: Float, cy: Float, size: Float) {
+        val drawable = loadSystemIconCached(iconRes) ?: return
+        val s = size / 2f
+        drawable.setBounds(
+            (cx - s).toInt(), (cy - s).toInt(), (cx + s).toInt(), (cy + s).toInt()
+        )
+        drawable.alpha = (255 * crossProgress).toInt()
+        drawable.draw(canvas)
+    }
+
+    private val iconCache = HashMap<Int, Drawable?>()
+
+    private fun loadSystemIconCached(resId: Int): Drawable? =
+        iconCache.getOrPut(resId) {
+            ContextCompat.getDrawable(context, resId)?.mutate()
+        }
+
     private var highlightRects = listOf<FloatArray>()
 
     fun setHighlight(rects: List<FloatArray>) {
@@ -259,6 +493,9 @@ class CursorOverlay @JvmOverloads constructor(
         for (r in highlightRects) {
             // Rects are already in window pixels (CSS px scaled + WebView offset).
             canvas.drawRect(r[0], r[1], r[0] + r[2], r[1] + r[3], HIGHLIGHT_PAINT)
+        }
+        if (crossProgress > 0f) {
+            drawCross(canvas)
         }
         canvas.save()
         // System hotspot: the pointer tip is at (4.5dp, 3.5dp) inside the bitmap.
