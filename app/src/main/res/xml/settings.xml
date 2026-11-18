@@ -28,6 +28,15 @@
         app:key="key_home_page"
         app:title="@string/pref_start_page" />
 
+    <ListPreference
+        app:defaultValue="auto"
+        app:entries="@array/pref_cursor_mode_entries"
+        app:entryValues="@array/pref_cursor_mode_entryvalues"
+        app:iconSpaceReserved="false"
+        app:key="key_cursor_mode"
+        app:title="@string/pref_cursor_mode"
+        app:useSimpleSummaryProvider="true" />
+
     <SwitchPreference
         app:defaultValue="0"
         app:iconSpaceReserved="false"

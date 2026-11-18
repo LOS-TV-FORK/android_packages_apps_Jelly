@@ -237,6 +237,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         cursorOverlay.iconCallback = {
             updateCursorIcon(cursorOverlay.cursorX, cursorOverlay.cursorY)
         }
+        cursorOverlay.isVisible = cursorUiEnabled()
         setSupportActionBar(toolbar)
         shortcutId = intent.getStringExtra(IntentUtils.EXTRA_SHORTCUT_ID)
         shortcutName = intent.getStringExtra(IntentUtils.EXTRA_SHORTCUT_NAME)
@@ -443,6 +444,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     override fun onResume() {
         super.onResume()
+        cursorOverlay.isVisible = cursorUiEnabled()
         if (backgroundShortcutId == null) webView.onResume()
         CookieManager.getInstance()
             .setAcceptCookie(!incognito && sharedPreferencesExt.cookiesEnabled)
@@ -716,6 +718,10 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         )
         appBarLayout.visibility = View.GONE
         webView.visibility = View.GONE
+        if (cursorUiEnabled()) {
+            cursorOverlay.isVisible = true
+            cursorOverlay.bringToFront()
+        }
     }
 
     override fun onHideCustomView() {
@@ -915,7 +921,17 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         }
     }
 
+    private fun cursorUiEnabled(): Boolean = when (sharedPreferencesExt.cursorMode) {
+        SharedPreferencesExt.CURSOR_MODE_ON -> true
+        SharedPreferencesExt.CURSOR_MODE_OFF -> false
+        else -> (resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_TYPE_MASK) ==
+            android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
+            packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (!cursorUiEnabled()) return super.dispatchKeyEvent(event)
         val focus = window.currentFocus
         if (focus != null && !isInsideUrlBar(focus) && focus != webView) {
             stopArrowHold()
@@ -1093,12 +1109,14 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.isFromSource(android.view.InputDevice.SOURCE_MOUSE)) {
-            cursorOverlay.hoverEnabled = false
-            window.decorView.removeCallbacks(mouseGone)
-            window.decorView.postDelayed(mouseGone, 3000L)
+            if (cursorUiEnabled()) {
+                cursorOverlay.hoverEnabled = false
+                window.decorView.removeCallbacks(mouseGone)
+                window.decorView.postDelayed(mouseGone, 3000L)
+            }
             if (event.action == MotionEvent.ACTION_UP) {
                 checkSelectionAfterGesture()
-            } else if (event.action != MotionEvent.ACTION_DOWN &&
+            } else if (cursorUiEnabled() && event.action != MotionEvent.ACTION_DOWN &&
                 event.action != MotionEvent.ACTION_BUTTON_PRESS
             ) {
                 cursorOverlay.moveToWindowPoint(event.x, event.y)
@@ -1149,8 +1167,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             } else {
                 selectionText = text
                 selectionMode = true
-                updateHighlightFromSelection()
-                showSelectionMenu()
+                updateHighlightFromSelection { showSelectionMenu() }
                 onResult?.invoke(true)
             }
         }
@@ -1248,8 +1265,11 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         return floatArrayOf((x - wl[0]) / d, (y - wl[1]) / d)
     }
 
-    private fun updateHighlightFromSelection() {
-        if (!sharedPreferencesExt.javascriptEnabled) return
+    private fun updateHighlightFromSelection(onDone: (() -> Unit)? = null) {
+        if (!sharedPreferencesExt.javascriptEnabled) {
+            onDone?.invoke()
+            return
+        }
         val js = """
             (function(){
               var s=window.getSelection();
@@ -1259,7 +1279,10 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
               return JSON.stringify({t:s.toString(),r:rects});
             })()
         """.trimIndent()
-        webView.evaluateJavascript(js) { value -> applySelectionResult(value) }
+        webView.evaluateJavascript(js) { value ->
+            applySelectionResult(value)
+            onDone?.invoke()
+        }
     }
 
     private fun updateSelectionDrag() {

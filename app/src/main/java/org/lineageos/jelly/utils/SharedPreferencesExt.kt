@@ -68,6 +68,9 @@ class SharedPreferencesExt(context: Context) {
     val javascriptEnabled: Boolean
         get() = sharedPreferences.getBoolean(JAVASCRIPT_ENABLED_KEY, JAVASCRIPT_ENABLED_DEFAULT)
 
+    val cursorMode: String
+        get() = sharedPreferences.getString(CURSOR_MODE_KEY, CURSOR_MODE_AUTO) ?: CURSOR_MODE_AUTO
+
     val locationEnabled: Boolean
         get() = sharedPreferences.getBoolean(LOCATION_ENABLED_KEY, LOCATION_ENABLED_DEFAULT)
 
@@ -110,6 +113,10 @@ class SharedPreferencesExt(context: Context) {
         private const val DYNAMIC_POPUP_ENABLED_DEFAULT = false
 
         private const val JAVASCRIPT_ENABLED_KEY = "key_javascript"
+        const val CURSOR_MODE_KEY = "key_cursor_mode"
+        const val CURSOR_MODE_AUTO = "auto"
+        const val CURSOR_MODE_ON = "on"
+        const val CURSOR_MODE_OFF = "off"
         private const val JAVASCRIPT_ENABLED_DEFAULT = true
 
         private const val LOCATION_ENABLED_KEY = "key_location"
