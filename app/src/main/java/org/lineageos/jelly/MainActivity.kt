@@ -720,6 +720,10 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         webView.visibility = View.GONE
         if (cursorUiEnabled()) {
             cursorOverlay.isVisible = true
+            // customView was added to the window content parent, so bringing only the
+            // overlay (a child deeper in the hierarchy) would keep it painted under the
+            // video. Re-order the overlay's own branch to the front as well.
+            (cursorOverlay.parent as? View)?.bringToFront()
             cursorOverlay.bringToFront()
         }
     }
@@ -933,10 +937,14 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (!cursorUiEnabled()) return super.dispatchKeyEvent(event)
         val focus = window.currentFocus
-        if (focus != null && !isInsideUrlBar(focus) && focus != webView) {
+        val inWebContent = focus != null && (
+            focus == webView || focus == customView ||
+                (customView != null && isDescendantOf(customView, focus))
+            )
+        if (focus != null && !isInsideUrlBar(focus) && !inWebContent) {
             stopArrowHold()
             // Focus is in a dialog/popup/selection toolbar or any other native UI: keys stay
-            // native.
+            // native. Focus inside the fullscreen custom view is still web content.
             return super.dispatchKeyEvent(event)
         }
         val imeVisible = ViewCompat.getRootWindowInsets(window.decorView)
@@ -1114,7 +1122,7 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 window.decorView.removeCallbacks(mouseGone)
                 window.decorView.postDelayed(mouseGone, 3000L)
             }
-            if (event.action == MotionEvent.ACTION_UP) {
+            if (cursorUiEnabled() && event.action == MotionEvent.ACTION_UP) {
                 checkSelectionAfterGesture()
             } else if (cursorUiEnabled() && event.action != MotionEvent.ACTION_DOWN &&
                 event.action != MotionEvent.ACTION_BUTTON_PRESS
@@ -1343,6 +1351,15 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
         var v: View? = view
         while (v != null) {
             if (v === urlBarLayout) return true
+            v = v.parent as? View
+        }
+        return false
+    }
+
+    private fun isDescendantOf(root: View?, view: View): Boolean {
+        var v: View? = view
+        while (v != null) {
+            if (v === root) return true
             v = v.parent as? View
         }
         return false
