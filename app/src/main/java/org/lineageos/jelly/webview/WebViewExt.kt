@@ -11,6 +11,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
+import android.view.PointerIcon
 import android.view.View
 import android.webkit.WebView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -52,6 +54,32 @@ class WebViewExt @JvmOverloads constructor(
         private set
 
     private val sharedPreferencesExt by lazy { SharedPreferencesExt(context) }
+
+    private val nullPointerIcon by lazy {
+        PointerIcon.getSystemIcon(context, PointerIcon.TYPE_NULL)
+    }
+    private val arrowPointerIcon by lazy {
+        PointerIcon.getSystemIcon(context, PointerIcon.TYPE_ARROW)
+    }
+
+    /**
+     * A page can hide the user's pointer with `cursor:none` (Blink resolves it to the
+     * shared TYPE_NULL icon), which takes control away from the user and is treated as
+     * hostile: hidden icons are replaced with the default arrow. Genuine cursor types
+     * (hand, text, wait, grab, ...) pass through untouched, so normal cursor feedback
+     * stays intact. (PointerIcon.getType() is not in the public SDK, hence the equals
+     * match against the process-wide cached TYPE_NULL singleton.)
+     */
+    override fun setPointerIcon(pointerIcon: PointerIcon?) {
+        super.setPointerIcon(
+            if (pointerIcon == nullPointerIcon) arrowPointerIcon else pointerIcon
+        )
+    }
+
+    override fun onResolvePointerIcon(event: MotionEvent, pointerIndex: Int): PointerIcon? {
+        val icon = super.onResolvePointerIcon(event, pointerIndex)
+        return if (icon == null || icon == nullPointerIcon) arrowPointerIcon else icon
+    }
 
     override fun loadUrl(url: String) {
         lastLoadedUrl = url
