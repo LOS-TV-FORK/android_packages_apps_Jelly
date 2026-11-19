@@ -42,6 +42,7 @@ class CursorOverlay @JvmOverloads constructor(
         const val ARM_UP = 0
         const val ARM_LEFT = 1
         const val ARM_RIGHT = 2
+        const val ARM_DOWN = 3
     }
 
     var cursorX = 0f
@@ -382,7 +383,8 @@ class CursorOverlay @JvmOverloads constructor(
         val wReload = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_reload))
         val wSelect = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_select))
         val wWheel = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_wheel))
-        val armLen = maxOf(wReload, maxOf(wSelect, wWheel))
+        val wActions = icon + textGap + labelPaint.measureText(context.getString(R.string.cross_actions))
+        val armLen = maxOf(wReload, maxOf(wSelect, maxOf(wWheel, wActions)))
         val radius = armLen + 56f * density
         diamondFill.alpha = (0xCC * p).toInt()
         diamondStroke.alpha = (0xF2 * p).toInt()
@@ -427,6 +429,7 @@ class CursorOverlay @JvmOverloads constructor(
             val (chipCx, chipCy) = when (focusedArm) {
                 ARM_LEFT -> Pair(pcx - radius * 0.52f - wSelect / 2f + icon / 2f, pcy)
                 ARM_RIGHT -> Pair(pcx + radius * 0.52f + wWheel / 2f - icon / 2f, pcy)
+                ARM_DOWN -> Pair(pcx + wActions / 2f - icon / 2f, pcy + radius * 0.52f)
                 else -> Pair(pcx, pcy - radius * 0.52f - shift)
             }
             val glow = focusGlow * crossProgress
@@ -435,13 +438,17 @@ class CursorOverlay @JvmOverloads constructor(
             canvas.drawCircle(chipCx, chipCy, chip, chipFill)
             canvas.drawCircle(chipCx, chipCy, chip, chipStroke)
         }
-        // Arms sit on the axes at the diamond's corners (bottom axis reserved).
+        // Arms sit on the axes at the diamond's corners.
         drawArmRow(canvas, context.getString(R.string.cross_select),
             R.drawable.ic_cross_select, pcx - radius * 0.52f, pcy, icon, textGap, iconLeft = true)
         drawArmRow(canvas, context.getString(R.string.cross_wheel),
             R.drawable.ic_cross_wheel, pcx + radius * 0.52f, pcy, icon, textGap, iconLeft = false)
         drawArmTop(canvas, context.getString(R.string.cross_reload),
             R.drawable.ic_cross_reload, pcx, pcy - radius * 0.52f, icon)
+        // Bottom arm opens the engine's hit-test menu at the cursor.
+        drawArmRow(canvas, context.getString(R.string.cross_actions),
+            R.drawable.ic_cross_context, pcx, pcy + radius * 0.52f, icon, textGap,
+            iconLeft = false)
         canvas.restore()
     }
 
@@ -470,6 +477,7 @@ class CursorOverlay @JvmOverloads constructor(
             labelPaint
         )
     }
+
 
     private fun drawGlyph(canvas: Canvas, iconRes: Int, cx: Float, cy: Float, size: Float) {
         val drawable = loadSystemIconCached(iconRes) ?: return

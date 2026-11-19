@@ -138,6 +138,7 @@
     <string name="cross_reload">Osveži</string>
     <string name="cross_select">Izberi besedilo</string>
     <string name="cross_wheel">Kolešček</string>
+    <string name="cross_actions">Dejanja</string>
     <string name="pref_ad_block_title">Blokiranje oglasov</string>
     <string name="pref_ad_block_summary">blokiranje oglasov in sledilnikov z EasyList in EasyPrivacy</string>
     <string name="selection_copy">Kopiraj</string>

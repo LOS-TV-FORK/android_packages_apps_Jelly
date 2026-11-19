@@ -137,6 +137,7 @@
     <string name="cross_reload">Reîncarcă</string>
     <string name="cross_select">Selectează textul</string>
     <string name="cross_wheel">Rotița</string>
+    <string name="cross_actions">Acțiuni</string>
     <string name="pref_ad_block_title">Blocare reclame</string>
     <string name="pref_ad_block_summary">blochează reclamele și trackerele cu EasyList și EasyPrivacy</string>
     <string name="selection_copy">Copiază</string>

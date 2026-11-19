@@ -130,6 +130,7 @@
     <string name="cross_reload">Презареждане</string>
     <string name="cross_select">Избери текст</string>
     <string name="cross_wheel">Колело</string>
+    <string name="cross_actions">Действия</string>
     <string name="pref_ad_block_title">Блокиране на реклами</string>
     <string name="pref_ad_block_summary">блокирайте рекламите и тракерите с EasyList и EasyPrivacy</string>
     <string name="selection_copy">Копиране</string>

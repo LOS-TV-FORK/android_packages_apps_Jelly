@@ -136,6 +136,7 @@
     <string name="cross_reload">بارگذاری دوباره</string>
     <string name="cross_select">انتخاب متن</string>
     <string name="cross_wheel">غلتک ماوس</string>
+    <string name="cross_actions">اقدامات</string>
     <string name="pref_ad_block_title">مسدودسازی تبلیغات</string>
     <string name="pref_ad_block_summary">تبلیغات و ردیاب‌ها را با EasyList و EasyPrivacy مسدود کنید</string>
     <string name="selection_copy">رونوشت</string>

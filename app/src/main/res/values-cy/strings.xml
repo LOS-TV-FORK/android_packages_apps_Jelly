@@ -108,6 +108,7 @@
     <string name="cross_reload">Ail-lwytho</string>
     <string name="cross_select">Dewis testun</string>
     <string name="cross_wheel">Olwyn llygoden</string>
+    <string name="cross_actions">Gweithredoedd</string>
     <string name="pref_ad_block_title">Rhwystro hysbysebion</string>
     <string name="pref_ad_block_summary">rhwystrwch hysbysebion a drakiadau gyda EasyList ac EasyPrivacy</string>
     <string name="selection_copy">Copïo</string>

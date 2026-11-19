@@ -86,6 +86,7 @@
     <string name="cross_reload">Оновити</string>
     <string name="cross_select">Вибрати текст</string>
     <string name="cross_wheel">Колесо миші</string>
+    <string name="cross_actions">Дії</string>
     <string name="pref_ad_block_title">Блокування реклами</string>
     <string name="pref_ad_block_summary">блокування реклами та трекерів за допомогою EasyList і EasyPrivacy</string>
     <string name="selection_copy">Копіювати</string>

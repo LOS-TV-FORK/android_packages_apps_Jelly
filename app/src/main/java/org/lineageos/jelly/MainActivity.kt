@@ -72,6 +72,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
@@ -627,6 +628,18 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
 
     override fun showSheetMenu(url: String, shouldAllowDownload: Boolean) {
         val sheet = BottomSheetDialog(this)
+        // Show the full action list instead of the default half peek height,
+        // which cuts the entries below the screen edge on TV displays.
+        sheet.setOnShowListener {
+            val bottom = sheet.findViewById<View>(
+                com.google.android.material.R.id.design_bottom_sheet
+            )
+            bottom?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.peekHeight = it.height
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         val view = layoutInflater.inflate(R.layout.sheet_actions, LinearLayout(this))
         val tabLayout = view.findViewById<View>(R.id.sheetNewTabLayout)
         val shareLayout = view.findViewById<View>(R.id.sheetShareLayout)
@@ -1153,7 +1166,8 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
             KeyEvent.KEYCODE_DPAD_UP -> CursorOverlay.ARM_UP
             KeyEvent.KEYCODE_DPAD_LEFT -> CursorOverlay.ARM_LEFT
             KeyEvent.KEYCODE_DPAD_RIGHT -> CursorOverlay.ARM_RIGHT
-            else -> return // the bottom arm is reserved for a future action
+            KeyEvent.KEYCODE_DPAD_DOWN -> CursorOverlay.ARM_DOWN
+            else -> return
         }
         crossFocusArm = arm
         cursorOverlay.setFocusedArm(arm)
@@ -1177,7 +1191,36 @@ class MainActivity : WebViewExtActivity(), SharedPreferences.OnSharedPreferenceC
                 closeCross()
                 enterWheelMode()
             }
+            CursorOverlay.ARM_DOWN -> {
+                closeCross()
+                // The action menu for the element under the cursor (open in new
+                // tab, copy link, download image...) - the same sheet a long click
+                // opens, resolved via a DOM hit-test at the cursor position.
+                showLinkMenuAtCursor()
+            }
             else -> closeCross()
+        }
+    }
+
+    // DOM hit-test at the cursor position: reproduces what the WebView's long click
+    // does (hit test result -> showSheetMenu) without injecting any input events.
+    private fun showLinkMenuAtCursor() {
+        val overlayLoc = IntArray(2).also { cursorOverlay.getLocationOnScreen(it) }
+        val webLoc = IntArray(2).also { webView.getLocationOnScreen(it) }
+        val density = resources.displayMetrics.density
+        val x = (cursorOverlay.cursorX + overlayLoc[0] - webLoc[0]) / density
+        val y = (cursorOverlay.cursorY + overlayLoc[1] - webLoc[1]) / density
+        val js = "(function(){var e=document.elementFromPoint($x,$y);" +
+            "if(!e)return '';" +
+            "var a=e.closest?e.closest('a[href]'):null;" +
+            "if(a){if(e.tagName==='IMG'&&e.src)return 'i|'+e.src;return 'a|'+a.href;}" +
+            "if(e.tagName==='IMG'&&e.src)return 'i|'+e.src;return '';})()"
+        webView.evaluateJavascript(js) { raw ->
+            val url = raw?.removeSurrounding("\"")?.replace("\\\"", "\"")?.trim().orEmpty()
+            if (url.isEmpty()) return@evaluateJavascript
+            val kind = url.substringBefore('|')
+            val target = url.substringAfter('|')
+            if (target.isNotEmpty()) showSheetMenu(target, kind == "i")
         }
     }
 

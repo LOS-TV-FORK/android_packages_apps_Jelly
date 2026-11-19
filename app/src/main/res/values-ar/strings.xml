@@ -89,6 +89,7 @@
     <string name="cross_reload">إعادة التحميل</string>
     <string name="cross_select">تحديد النص</string>
     <string name="cross_wheel">عجلة الفأرة</string>
+    <string name="cross_actions">إجراءات</string>
     <string name="pref_ad_block_title">حظر الإعلانات</string>
     <string name="pref_ad_block_summary">احظر الإعلانات وأدوات التتبع باستخدام EasyList وEasyPrivacy</string>
     <string name="selection_copy">نسخ</string>

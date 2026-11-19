@@ -123,6 +123,7 @@
     <string name="cross_reload">Rifresko</string>
     <string name="cross_select">Përzgjidh tekstin</string>
     <string name="cross_wheel">Rrota e miut</string>
+    <string name="cross_actions">Veprime</string>
     <string name="pref_ad_block_title">Bllokimi i reklamave</string>
     <string name="pref_ad_block_summary">bllokoni reklamat dhe gjurmuesit me EasyList dhe EasyPrivacy</string>
     <string name="selection_copy">Kopjo</string>

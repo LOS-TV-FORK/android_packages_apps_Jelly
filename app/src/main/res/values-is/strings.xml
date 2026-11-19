@@ -92,6 +92,7 @@
     <string name="cross_reload">Endurhlaða</string>
     <string name="cross_select">Velja texta</string>
     <string name="cross_wheel">Skrunhjól</string>
+    <string name="cross_actions">Aðgerðir</string>
     <string name="pref_ad_block_title">Auglýsingalokun</string>
     <string name="pref_ad_block_summary">lokaðu á auglýsingar og rekjara með EasyList og EasyPrivacy</string>
     <string name="selection_copy">Afrita</string>

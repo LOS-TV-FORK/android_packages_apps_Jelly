@@ -99,6 +99,7 @@
     <string name="cross_reload">Genindlæs</string>
     <string name="cross_select">Vælg tekst</string>
     <string name="cross_wheel">Musehjul</string>
+    <string name="cross_actions">Handlinger</string>
     <string name="pref_ad_block_title">Annonceblokering</string>
     <string name="pref_ad_block_summary">blokering af annoncer og sporere med EasyList og EasyPrivacy</string>
     <string name="selection_copy">Kopiér</string>

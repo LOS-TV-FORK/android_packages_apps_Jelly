@@ -89,6 +89,7 @@
     <string name="cross_reload">Opnij lade</string>
     <string name="cross_select">Tekst selektearje</string>
     <string name="cross_wheel">Mûswiel</string>
+    <string name="cross_actions">Aksjes</string>
     <string name="pref_ad_block_title">Adblokkering</string>
     <string name="pref_ad_block_summary">blokkearje advertinsjes en trackers mei EasyList en EasyPrivacy</string>
     <string name="selection_copy">Kopiearje</string>

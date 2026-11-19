@@ -134,6 +134,7 @@
     <string name="cross_reload">Reload</string>
     <string name="cross_select">Select text</string>
     <string name="cross_wheel">Wheel</string>
+    <string name="cross_actions">Actions</string>
     <string name="pref_ad_block_title">Ad blocking</string>
     <string name="pref_ad_block_summary">Block ads and trackers with EasyList and EasyPrivacy</string>
     <string name="selection_copy">Copy</string>

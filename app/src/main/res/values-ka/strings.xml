@@ -121,6 +121,7 @@
     <string name="cross_reload">გადატვირთვა</string>
     <string name="cross_select">ტექსტის მონიშვნა</string>
     <string name="cross_wheel">თაგუნას ბორბალი</string>
+    <string name="cross_actions">ქმედებები</string>
     <string name="pref_ad_block_title">რეკლამის დაბლოკვა</string>
     <string name="pref_ad_block_summary">დაბლოკეთ რეკლამები და თვალმდევრები EasyList-ითა და EasyPrivacy-ს გამოყენებით</string>
     <string name="selection_copy">კოპირება</string>

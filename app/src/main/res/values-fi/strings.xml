@@ -103,6 +103,7 @@
     <string name="cross_reload">Lataa uudelleen</string>
     <string name="cross_select">Valitse teksti</string>
     <string name="cross_wheel">Rulla</string>
+    <string name="cross_actions">Toiminnot</string>
     <string name="pref_ad_block_title">Mainostenesto</string>
     <string name="pref_ad_block_summary">estä mainokset ja seuranta EasyList- ja EasyPrivacy-listoilla</string>
     <string name="selection_copy">Kopioi</string>

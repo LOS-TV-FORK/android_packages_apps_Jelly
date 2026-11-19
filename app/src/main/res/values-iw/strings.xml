@@ -137,6 +137,7 @@
     <string name="cross_reload">טען מחדש</string>
     <string name="cross_select">בחר טקסט</string>
     <string name="cross_wheel">גלגלת</string>
+    <string name="cross_actions">פעולות</string>
     <string name="pref_ad_block_title">חסימת פרסומות</string>
     <string name="pref_ad_block_summary">חסום פרסומות וכלי מעקב בעזרת EasyList ו־EasyPrivacy</string>
     <string name="selection_copy">העתקה</string>

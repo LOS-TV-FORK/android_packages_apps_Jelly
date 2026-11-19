@@ -138,6 +138,7 @@
     <string name="cross_reload">Обновить</string>
     <string name="cross_select">Выделить текст</string>
     <string name="cross_wheel">Колесо</string>
+    <string name="cross_actions">Действия</string>
     <string name="pref_ad_block_title">Блокировка рекламы</string>
     <string name="pref_ad_block_summary">блокировка рекламы и трекеров с EasyList и EasyPrivacy</string>
     <string name="selection_copy">Копировать</string>

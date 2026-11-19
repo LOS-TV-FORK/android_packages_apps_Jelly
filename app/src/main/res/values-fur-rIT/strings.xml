@@ -130,6 +130,7 @@
     <string name="cross_reload">Ricarie</string>
     <string name="cross_select">Selezione il test</string>
     <string name="cross_wheel">Rodele</string>
+    <string name="cross_actions">Azions</string>
     <string name="pref_ad_block_title">Bloc des reclamutis</string>
     <string name="pref_ad_block_summary">bloche reclamutis e trachadôrs cun EasyList e EasyPrivacy</string>
     <string name="selection_copy">Copie</string>

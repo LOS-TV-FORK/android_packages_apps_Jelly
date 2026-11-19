@@ -137,6 +137,7 @@
     <string name="cross_reload">Recarregar</string>
     <string name="cross_select">Selecciona el text</string>
     <string name="cross_wheel">Roda</string>
+    <string name="cross_actions">Accions</string>
     <string name="pref_ad_block_title">Bloqueig d\'anuncis</string>
     <string name="pref_ad_block_summary">Bloqueja els anuncis i els rastreadors amb EasyList i EasyPrivacy</string>
     <string name="selection_copy">Copia</string>

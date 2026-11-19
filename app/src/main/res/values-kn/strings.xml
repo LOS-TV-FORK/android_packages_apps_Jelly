@@ -56,6 +56,7 @@
     <string name="cross_reload">ಪುನಃ ಲೋಡ್ ಮಾಡಿ</string>
     <string name="cross_select">ಪಠ್ಯ ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="cross_wheel">ಚಕ್ರ</string>
+    <string name="cross_actions">ಕ್ರಿಯೆಗಳು</string>
     <string name="pref_ad_block_title">ಜಾಹಿರಾತು ತಡೆಗಟ್ಟುವಿಕೆ</string>
     <string name="pref_ad_block_summary">EasyList ಮತ್ತು EasyPrivacy ಬಳಸಿ ಜಾಹಿರಾತುಗಳು ಮತ್ತು ಟ್ರ್ಯಾಕರ್‌ಗಳನ್ನು ತಡೆಯಿರಿ</string>
     <string name="selection_copy">ನಕಲಿಸಿ</string>

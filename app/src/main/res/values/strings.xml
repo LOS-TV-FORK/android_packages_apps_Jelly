@@ -119,6 +119,8 @@
     <string name="cross_select">Select text</string>
     <!-- Cursor action cross: enter mouse wheel mode (right arm) -->
     <string name="cross_wheel">Wheel</string>
+    <!-- Cursor action cross: open the hit-test menu (down arm) -->
+    <string name="cross_actions">Actions</string>
     <!-- Settings: ad blocking title -->
     <string name="pref_ad_block_title">Ad blocking</string>
     <!-- Settings: ad blocking summary -->
